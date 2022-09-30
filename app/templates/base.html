@@ -1,0 +1,23 @@
+<html>
+    <head>
+        {{ app_title }}
+    </head>
+    <body>
+        <div>
+            Microblog:
+            <a href="{{ url_for('index') }}">{{ config.LABELS.home }}</a>
+            <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>

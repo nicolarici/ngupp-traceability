@@ -1,0 +1,13 @@
+{
+    "confirm_password": "Ripeti la password",
+    "email": "E-mail",
+    "email_error": "Indirizzo E-mail non valido",
+    "home": "Home",
+    "home_title": "Tracciabilità fascicoli",
+    "home_text": "Benvenuto",
+    "password": "Password",
+    "password_error": "Le password non corrispondono",
+    "registration": "Registrati",
+    "registration_title": "Tracciabilità fascicoli - Registrazione",
+    "required": "Campo obbligatorio"
+}
