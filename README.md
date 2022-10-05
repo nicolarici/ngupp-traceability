@@ -23,6 +23,7 @@ ssh -L localhost:5000:localhost:5000 [username]@[ip-server]
 
 Start the Flask server:
 ```console
+conda activate ngupp
 flask --debug run
 ```
 
