@@ -5,12 +5,8 @@
 
 Create conda env for developing
 ```console
-conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy
+conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy flask-migrate
 ```
-
-Other packages installed after first commit:
-
--
 
 ## Useful commands:
 
