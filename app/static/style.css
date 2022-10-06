@@ -1,0 +1,11 @@
+body {
+    background-color: rgb(110, 173, 105);
+    color: rgb(240, 248, 255);
+    font-family: "Helvetica", "Arial", sans-serif;
+    font-size: 1.3em;
+}
+
+a {
+    color: rgb(240, 248, 255);
+}
+
