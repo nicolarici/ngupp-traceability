@@ -1,13 +1,27 @@
 {
+    "cognome": "Cognome",
     "confirm_password": "Ripeti la password",
     "email": "E-mail",
     "email_error": "Indirizzo E-mail non valido",
+    "email_alredy_used": "Indirizzo E-mail già registrato",
     "home": "Home",
     "home_title": "Tracciabilità fascicoli",
     "home_text": "Benvenuto",
+    "login": "Login",
+    "login_error": "Email o password errati!",
+    "login_required": "Devi effettuare il login per accedere a questa pagina",
+    "login_title": "Tracciabilità fascicoli - Login",
+    "logout": "Logout",
+    "modify": "Aggiorna informazioni",
+    "nome": "Nome",
+    "new_user": "Nuovo utente?",
     "password": "Password",
     "password_error": "Le password non corrispondono",
+    "profilo": "Profilo",
     "registration": "Registrati",
     "registration_title": "Tracciabilità fascicoli - Registrazione",
-    "required": "Campo obbligatorio"
+    "remember_me": "Ricordami",
+    "required": "Campo obbligatorio",
+    "ufficio": "Ufficio",
+    "user_modified": "Informazioni aggiornate correttamente"
 }

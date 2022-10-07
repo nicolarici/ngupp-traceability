@@ -4,9 +4,13 @@
     </head>
     <body>
         <div>
-            Microblog:
             <a href="{{ url_for('index') }}">{{ config.LABELS.home }}</a>
-            <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a>
+                <a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a>
+            {% endif %}
         </div>
         <hr>
         {% with messages = get_flashed_messages() %}

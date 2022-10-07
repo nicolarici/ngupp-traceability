@@ -11,6 +11,7 @@ conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchem
 Other packages needed:
 
 - conda install -c conda-forge qrcode
+- conda install -c conda-forge flask-migration
 - conda install -c conda-forge flask-login
 
 
