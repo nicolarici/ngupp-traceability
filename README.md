@@ -31,3 +31,15 @@ flask run
 ```
 
 
+## Database
+Initialization
+```console
+flask db init
+```
+
+After all schema modification (modification to models.py)
+```console
+flask db migrate -m "message"
+flask db upgrade
+```
+
