@@ -12,6 +12,8 @@
     "login_required": "Devi effettuare il login per accedere a questa pagina",
     "login_title": "Tracciabilità fascicoli - Login",
     "codice":"Codice fascicolo",
+    "codice_esistente":"Codice fascicolo già esistente",
+    "elimina_fascicolo":"Elimina fascicolo",
     "genera":"Genera codice QR",
     "generation_title":"Generazione codice QR",
     "storico_fascicolo":"Storico fascicolo",

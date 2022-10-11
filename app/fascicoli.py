@@ -13,7 +13,9 @@ from app.extension import db
 
 def generate_qr_code(file_name):
     img = qrcode.make(current_app.config["BASE_URL"] + "fascicoli/" + file_name + "/add")
-    downloads_path = str(Path.home() / "Downloads")
+    downloads_path = str(Path.home() / "Downloads/QRCode")
+    if not Path(downloads_path).exists():
+        Path(downloads_path).mkdir(parents=True)
     img.save(downloads_path + f"/{file_name}.png")
 
 
@@ -31,6 +33,10 @@ def generation():
     
     form = GenerationForm()
     if form.validate_on_submit():
+        
+        if db.session.query(Files.code).filter_by(code=form.codice.data).scalar() is not None:
+            flash(current_app.config["LABELS"]["codice_esistente"])
+            return redirect(url_for('fascicoli.generation'))
         
         generate_qr_code(form.codice.data)
         
@@ -52,7 +58,7 @@ def file_details(code):
     files = Files.query.filter_by(code=code).order_by(Files.created).all()
     
     
-    return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files)
+    return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
 
 @bp.route('/<code>/add', methods=('GET', 'POST'))
 @login_required
@@ -67,3 +73,14 @@ def file_add(code):
     
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files)
+
+@bp.route('/<code>/delete', methods=('GET', 'POST'))
+@login_required
+def file_delete(code):
+    
+    files = Files.query.filter_by(code=code).all()
+    for file in files:
+        db.session.delete(file)
+    db.session.commit()
+    
+    return redirect(url_for('index'))
