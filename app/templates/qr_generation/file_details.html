@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ config.LABELS.storico_fascicolo }}</h1>
+    <hr>
+    <table>
+        <tr>
+          <th>Codice fascicolo</th>
+          <th>Utente in possesso</th>
+          <th>Ufficio</th>
+          <th>Data</th>
+        </tr>
+        {% for fascicolo in files %}
+        <tr>
+          <td>{{ fascicolo.code }}</td>
+          <td>{{ fascicolo.user_name }}</td>
+          <td>{{ fascicolo.user_office }}</td>
+          <td>{{ fascicolo.created }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

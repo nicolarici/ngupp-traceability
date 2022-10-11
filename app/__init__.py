@@ -43,6 +43,9 @@ def create_app():
 
     from . import user
     app.register_blueprint(user.bp)
+    
+    from . import fascicoli
+    app.register_blueprint(fascicoli.bp)
 
 
     return app

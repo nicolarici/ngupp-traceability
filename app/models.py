@@ -32,6 +32,8 @@ class Files(db.Model):
     code = db.Column(db.String(32), index=True)
     created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_name =  db.Column(db.String(64), index=True)
+    user_office = db.Column(db.String(64), index=True)
 
     def __repr__(self):
         return '<File {}>'.format(self.code)

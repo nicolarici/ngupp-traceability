@@ -8,7 +8,7 @@ from app.extension import db
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 
-@bp.route('/user/<id>', methods=('GET', 'POST'))
+@bp.route('/<id>', methods=('GET', 'POST'))
 @login_required
 def user(id):
 
