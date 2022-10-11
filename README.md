@@ -5,14 +5,8 @@
 
 Create conda env for developing
 ```console
-conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy
+conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy flask-migrate flask-login qrcode pillow -c conda-forge
 ```
-
-Other packages needed:
-
-- conda install -c conda-forge qrcode
-- conda install -c conda-forge flask-migration
-- conda install -c conda-forge flask-login
 
 
 ## Useful commands:
