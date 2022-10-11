@@ -12,7 +12,7 @@ from app.models import User
 from app.extension import db
 
 def generate_qr_code(file_name):
-    img = qrcode.make(current_app.config["BASE_URL"] + "fascicoli/" + file_name)
+    img = qrcode.make(current_app.config["BASE_URL"] + "fascicoli/" + file_name + "/add")
     downloads_path = str(Path.home() / "Downloads")
     img.save(downloads_path + f"/{file_name}.png")
 
@@ -48,6 +48,20 @@ def generation():
 @bp.route('/<code>', methods=('GET', 'POST'))
 @login_required
 def file_details(code):
+    
+    files = Files.query.filter_by(code=code).order_by(Files.created).all()
+    
+    
+    return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files)
+
+@bp.route('/<code>/add', methods=('GET', 'POST'))
+@login_required
+def file_add(code):
+    
+    file = Files(code=code, user_id=current_user.id, user_name=current_user.nome+" "+current_user.cognome, user_office=current_user.ufficio)
+        
+    db.session.add(file)
+    db.session.commit()
     
     files = Files.query.filter_by(code=code).order_by(Files.created).all()
     

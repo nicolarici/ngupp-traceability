@@ -8,6 +8,7 @@
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a>
                 <a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a>
+                <a href="{{ url_for('fascicoli.generation') }}">{{ config.LABELS.genera }}</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a>
             {% endif %}
