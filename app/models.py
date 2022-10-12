@@ -34,6 +34,15 @@ class Files(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user_name =  db.Column(db.String(64), index=True)
     user_office = db.Column(db.String(64), index=True)
+    
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'created': self.created,
+            'user_id': self.user_id,
+            'user_name': self.user_name,
+            'user_office': self.user_office
+        }
 
     def __repr__(self):
         return '<File {}>'.format(self.code)

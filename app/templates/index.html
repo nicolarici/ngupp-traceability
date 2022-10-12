@@ -2,4 +2,32 @@
 
 {% block content %}
     <h1>Buongiorno, {{ current_user.nome }}!</h1>
+    <table id="data" class="table table-striped">
+        <thead>
+          <tr>
+            <th>Codice fascicolo</th>
+            <th>Nome possessore</th>
+            <th>Ufficio</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+{% endblock %}
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        ajax: '/api/data',
+        //serverSide: true,
+        columns: [
+          {data: 'code', orderable: false},
+          {data: 'user_name', orderable: false},
+          {data: 'user_office', orderable: false},
+          {data: 'created'},
+        ],
+      });
+    });
+  </script>
 {% endblock %}
