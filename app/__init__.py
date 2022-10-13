@@ -33,15 +33,14 @@ def create_app():
     @app.route('/index')
     @login_required
     def index():
-        files = Files.query.order_by(Files.created).all()
         return render_template('index.html', 
                                title=app.config["LABELS"]["home_title"], 
-                               home_text=app.config["LABELS"]["home_text"], files = files)
+                               home_text=app.config["LABELS"]["home_text"])
     
     @app.route('/api/data')
     @login_required
     def data():
-        query = Files.query
+        # TODO: scrivere la query con il join
 
         # search filter
         search = request.args.get('search[value]')
@@ -75,9 +74,18 @@ def create_app():
         length = request.args.get('length', type=int)
         query = query.offset(start).limit(length)
 
+
+        def render_file(file):
+            return {
+                'code': file.code,
+                'user_name': "", 
+                'user_office': "",
+                'created': file.created
+            }
+
         # response
         return {
-            'data': [file.to_dict() for file in query],
+            'data': [file.render_file() for file in query],
             'recordsFiltered': total_filtered,
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),

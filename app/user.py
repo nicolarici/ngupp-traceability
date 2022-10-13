@@ -31,7 +31,6 @@ def user(id):
         submit = SubmitField(current_app.config["LABELS"]["modify"])
 
     form = ModifyUserForm()
-
     if form.validate_on_submit():
 
         user.nome = form.nome.data
