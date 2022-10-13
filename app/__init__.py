@@ -1,9 +1,9 @@
-from msilib.schema import File
+from ensurepip import bootstrap
 from flask import Flask, render_template, request
 from app.models import Files
 from config import Config
 from flask_login import login_required
-
+from flask_bootstrap import Bootstrap
 
 """
     Create and configure the app.
@@ -13,6 +13,7 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
+    bootstrap = Bootstrap(app)
     
     # Set-up estensioni.
     
@@ -41,7 +42,10 @@ def create_app():
     @login_required
     def data():
         # TODO: scrivere la query con il join
-
+        files = Files.query.join(Users, users.id==Files.user_id)
+        userList = users.query
+    .join(friendships, users.id==friendships.user_id)\
+    .add_columns(users.userId, users.name, users.email, friends.userId, friendId)
         # search filter
         search = request.args.get('search[value]')
         if search:

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% block app_content %}
     <h1>Buongiorno, {{ current_user.nome }}!</h1>
     <table id="data" class="table table-striped">
         <thead>
@@ -28,6 +28,10 @@
           {data: 'created'},
         ],
       });
+      $('#data tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        redirect(url_for('fascicoli.file_details', code=data['code']))
     });
+  });
   </script>
 {% endblock %}

@@ -1,39 +1,56 @@
-<html>
-    <head>
-        {{ app_title }}
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
-    </head>
-    <body>
-        <div>
-            <a href="{{ url_for('index') }}">{{ config.LABELS.home }}</a>
-            {% if current_user.is_authenticated %}
-                <a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a>
-                <a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a>
-                <a href="{{ url_for('fascicoli.generation') }}">{{ config.LABELS.genera }}</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a>
-            {% endif %}
-        </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {{ app_title }}
+    
+{% endblock %}
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">-->
+{% block navbar %}
+    <nav class="navbar navbar-default">
         <div class="container">
-            <hr>
-            {% block content %}{% endblock %}
-          </div>
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"  aria-expanded="false">
+                    <span class="sr-only">Toggle navbar</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ url_for('index') }}">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_anonymous %}
+                        <li><a href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a></li>
+                        <li><a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a></li>
+                        <li><a href="{{ url_for('fascicoli.generation') }}">{{ config.LABELS.genera }}</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
-    {% block scripts %}{% endblock %}
-    </body>
-</html>
+{% endblock %}
+
+
 
 
