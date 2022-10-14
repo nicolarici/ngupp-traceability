@@ -43,12 +43,12 @@ def generation():
         
         generate_qr_code(str(form.codice.data)+"-"+str(form.anno.data))
         
-        file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), user_id=current_user.id, user_name=current_user.nome+" "+current_user.cognome, user_office=current_user.ufficio)
+        file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), user_id=current_user.id)
         
         db.session.add(file)
         db.session.commit()
 
-        files = Files.query.filter_by(code=form.codice.data).first()
+        files = Files.query.filter_by(code=form.codice.data).all()
 
         return redirect(url_for('fascicoli.file_details', code=str(form.codice.data)+"-"+str(form.anno.data)))
 
@@ -58,8 +58,7 @@ def generation():
 @login_required
 def file_details(code):
     
-    files = Files.query.filter_by(code=code).order_by(Files.created).all()
-    
+    files = Files.query.filter_by(code=code).join(User, User.id==Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
 
@@ -67,7 +66,7 @@ def file_details(code):
 @login_required
 def file_add(code):
     
-    file = Files(code=code, user_id=current_user.id, user_name=current_user.nome+" "+current_user.cognome, user_office=current_user.ufficio)
+    file = Files(code=code, user_id=current_user.id)
         
     db.session.add(file)
     db.session.commit()
