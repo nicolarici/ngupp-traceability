@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
@@ -22,8 +22,8 @@ def register():
                                         
         password = PasswordField(current_app.config["LABELS"]["password"], 
                                 validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                            EqualTo('confirm', 
-                                            message=current_app.config["LABELS"]["password_error"])])
+                                            EqualTo('confirm', message=current_app.config["LABELS"]["password_match_error"]),
+                                            Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$", message=current_app.config["LABELS"]["password_error"])])
 
         confirm  = PasswordField(current_app.config["LABELS"]["confirm_password"])
 
@@ -45,7 +45,7 @@ def register():
 
     form = RegistrationForm()
 
-    if form.validate_on_submit() and form.email.data[-13:] == "@giustizia.it":
+    if form.validate_on_submit(): #and form.email.data[-13:] == "@giustizia.it":
 
         nome, cognome = form.email.data.split("@")[0].split(".")
 
@@ -54,6 +54,15 @@ def register():
 
         db.session.add(user)
         db.session.commit()
+
+
+        # Invia e-mail di conferma account.
+
+        import smtplib, ssl
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(current_app.config["MAIL_SERVER"], context=context) as server:
+            server.sendmail(current_app.config["MAIL_SENDER"], form.email.data, "Registrazione completata")
 
         return redirect(url_for('auth.login'))
 

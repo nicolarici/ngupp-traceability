@@ -1,4 +1,3 @@
-from ensurepip import bootstrap
 from flask import Flask, render_template, request
 from app.models import Files
 from config import Config
@@ -41,11 +40,8 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        # TODO: scrivere la query con il join
-        files = Files.query.join(Users, users.id==Files.user_id)
-        userList = users.query
-    .join(friendships, users.id==friendships.user_id)\
-    .add_columns(users.userId, users.name, users.email, friends.userId, friendId)
+        query = Files.query()
+
         # search filter
         search = request.args.get('search[value]')
         if search:

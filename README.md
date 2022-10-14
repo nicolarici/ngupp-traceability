@@ -5,7 +5,7 @@
 
 Create conda env for developing
 ```console
-conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy flask-migrate flask-login qrcode pillow flask-bootstrap -c conda-forge
+conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchemy flask-migrate flask-login qrcode pillow flask-bootstrap flask-mail pyjwt -c conda-forge
 ```
 
 
@@ -36,4 +36,11 @@ After all schema modification (modification to models.py)
 flask db migrate -m "message"
 flask db upgrade
 ```
+
+# Mail-server
+Fake email server start
+```console
+python -m smtpd -c DebuggingServer -n localhost:1025
+```
+
 
