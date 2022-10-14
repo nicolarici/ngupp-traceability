@@ -6,6 +6,9 @@ from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 from app.extension import db
+import smtplib
+import email.utils
+from email.mime.text import MIMEText
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -49,7 +52,7 @@ def register():
 
         nome, cognome = form.email.data.split("@")[0].split(".")
 
-        user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data)
+        user = User(nome=nome.capitalize(), cognome=cognome.capitalize(), email=form.email.data, ufficio=form.ufficio.data)
         user.set_password(form.password.data)
 
         db.session.add(user)
@@ -58,11 +61,13 @@ def register():
 
         # Invia e-mail di conferma account.
 
-        import smtplib, ssl
+        msg = MIMEText("Registrazione avvenuta con successo!")
+        msg['To'] = email.utils.formataddr(('Recipient', form.email.data))
+        msg['From'] = email.utils.formataddr(('Author', current_app.config["MAIL_SENDER"]))
+        msg['Subject'] = 'Simple test message'
 
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(current_app.config["MAIL_SERVER"], context=context) as server:
-            server.sendmail(current_app.config["MAIL_SENDER"], form.email.data, "Registrazione completata")
+        with smtplib.SMTP(current_app.config["MAIL_SERVER"], current_app.config["MAIL_PORT"]) as server:
+            server.sendmail(current_app.config["MAIL_SENDER"], form.email.data, msg.as_string())
 
         return redirect(url_for('auth.login'))
 

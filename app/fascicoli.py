@@ -2,7 +2,7 @@ import code
 import datetime
 import qrcode
 from pathlib import Path
-from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
+from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
 from flask_login import login_required,current_user
 from app.models import Files
 from flask_wtf import FlaskForm
@@ -10,16 +10,32 @@ from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from app.models import User
 from app.extension import db
+import os
 
-def generate_qr_code(file_name):
-    img = qrcode.make(current_app.config["BASE_URL"] + "fascicoli/" + file_name+ "/add")
-    downloads_path = str(Path.home() / "Downloads/QRCode")
-    if not Path(downloads_path).exists():
-        Path(downloads_path).mkdir(parents=True)
-    img.save(downloads_path + f"/{file_name}.png")
+def generate_and_download_qr_code(code):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{code}/add")
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(f"app/static/img/{code}.png")
+
+    return
 
 
 bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
+
+
+@bp.route('/download/<code>', methods=['GET', 'POST'])
+def download(code):
+    uploads = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
+    return send_from_directory(uploads, f"{code}.png", as_attachment=True)
+
 
 @bp.route('/generation', methods=('GET', 'POST'))
 @login_required
@@ -41,7 +57,7 @@ def generation():
             flash(current_app.config["LABELS"]["codice_esistente"])
             return redirect(url_for('fascicoli.generation'))
         
-        generate_qr_code(str(form.codice.data)+"-"+str(form.anno.data))
+        generate_and_download_qr_code(str(form.codice.data)+"-"+str(form.anno.data))
         
         file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), user_id=current_user.id)
         
@@ -58,7 +74,7 @@ def generation():
 @login_required
 def file_details(code):
     
-    files = Files.query.filter_by(code=code).join(User, User.id==Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
+    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
 
@@ -71,8 +87,7 @@ def file_add(code):
     db.session.add(file)
     db.session.commit()
     
-    files = Files.query.filter_by(code=code).order_by(Files.created).all()
-    
+    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files)
 

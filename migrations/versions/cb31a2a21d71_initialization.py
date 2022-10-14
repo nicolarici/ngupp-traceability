@@ -1,8 +1,8 @@
-"""nuovi parametri File
+"""initialization
 
-Revision ID: 2aa39ba5c451
+Revision ID: cb31a2a21d71
 Revises: 
-Create Date: 2022-10-13 16:56:57.386318
+Create Date: 2022-10-14 14:26:18.457289
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2aa39ba5c451'
+revision = 'cb31a2a21d71'
 down_revision = None
 branch_labels = None
 depends_on = None

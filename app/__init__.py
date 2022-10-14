@@ -4,6 +4,7 @@ from app.models import Files, User
 from config import Config
 from flask_login import login_required
 from flask_bootstrap import Bootstrap
+import os
 
 """
     Create and configure the app.
@@ -14,6 +15,10 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
     bootstrap = Bootstrap(app)
+
+    uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    if not os.path.exists(uploads):
+        os.makedirs(uploads)
     
     # Set-up estensioni.
     
@@ -35,8 +40,7 @@ def create_app():
     @login_required
     def index():
         return render_template('index.html', 
-                               title=app.config["LABELS"]["home_title"], 
-                               home_text=app.config["LABELS"]["home_text"])
+                               title=app.config["LABELS"]["home_title"])
     
     @app.route('/api/data')
     @login_required
@@ -81,7 +85,7 @@ def create_app():
                 'code': file.code,
                 'user_name': file.nome + ' ' + file.cognome,
                 'user_office': file.ufficio,
-                'created': file.created.strftime(' %d/%m/%Y %H:%M:%S ')
+                'created': file.created.strftime(' %d/%m/%Y %H:%M ')
             }
 
         # response
