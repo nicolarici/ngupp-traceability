@@ -1,5 +1,6 @@
+from ensurepip import bootstrap
 from flask import Flask, render_template, request
-from app.models import Files
+from app.models import Files, User
 from config import Config
 from flask_login import login_required
 from flask_bootstrap import Bootstrap
@@ -40,8 +41,8 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        query = Files.query()
-
+        query = Files.query.join(User, User.id==Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created)
+        
         # search filter
         search = request.args.get('search[value]')
         if search:
@@ -78,14 +79,14 @@ def create_app():
         def render_file(file):
             return {
                 'code': file.code,
-                'user_name': "", 
-                'user_office': "",
-                'created': file.created
+                'user_name': file.nome + ' ' + file.cognome,
+                'user_office': file.ufficio,
+                'created': file.created.strftime(' %d/%m/%Y %H:%M:%S ')
             }
 
         # response
         return {
-            'data': [file.render_file() for file in query],
+            'data': [render_file(file) for file in query],
             'recordsFiltered': total_filtered,
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),

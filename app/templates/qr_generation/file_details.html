@@ -5,7 +5,7 @@
 
     <hr>
     <a href="{{ url_for('fascicoli.file_delete', code=code) }}">{{ config.LABELS.elimina_fascicolo }}</a>
-    <table>
+    <table id="data" class="table table-striped">
         <tr>
           <th>Codice fascicolo</th>
           <th>Utente in possesso</th>
@@ -15,8 +15,8 @@
         {% for fascicolo in files %}
         <tr>
           <td>{{ fascicolo.code }}</td>
-          <td>{{ fascicolo.user_name }}</td>
-          <td>{{ fascicolo.user_office }}</td>
+          <td>{{ fascicolo.nome +" "+ fascicolo.cognome }}</td>
+          <td>{{ fascicolo.ufficio }}</td>
           <td>{{ fascicolo.created }}</td>
         </tr>
         {% endfor %}
