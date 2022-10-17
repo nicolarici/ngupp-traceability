@@ -9,7 +9,13 @@
             {{ wtf.quick_form(form) }}
         </div>
     </div>
-    <p>{{ config.LABELS.new_user }} <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a></p>
-
+    <p>
+        {{ config.LABELS.new_user }} 
+        <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
+    </p>
+    <p>
+        Password dimenticata?
+        <a href="{{ url_for('auth.reset_password_request') }}">Clicca qui per resettarla!</a>
+    </p>
 {% endblock %}
 

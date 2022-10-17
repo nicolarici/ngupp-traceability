@@ -19,8 +19,10 @@
   <script>
     $(document).ready(function () {
       var table=$('#data').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
+        },
         ajax: '/api/data',
-        //serverSide: true,
         columns: [
           {data: 'code', orderable: false},
           {data: 'user_name', orderable: false},
@@ -28,10 +30,11 @@
           {data: 'created'},
         ],
       });
-      table.on( 'click', 'tr', function () {
+
+      table.on('click', 'tr', function () {
         var data = table.row(this).data();
-        redirect(url_for('fascicoli.file_details', code=data['code']))
-    });
+        location.href = "/fascicoli/" + data.code;
+      });
   });
   </script>
 {% endblock %}

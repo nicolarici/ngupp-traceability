@@ -34,13 +34,15 @@ def create_app():
     from app.extension import migrate
     migrate.init_app(app)
 
+    from app.extension import mail
+    mail.init_app(app)
+
 
     @app.route('/')
     @app.route('/index')
     @login_required
     def index():
-        return render_template('index.html', 
-                               title=app.config["LABELS"]["home_title"])
+        return render_template('index.html', title=app.config["LABELS"]["home_title"])
     
     @app.route('/api/data')
     @login_required

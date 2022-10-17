@@ -2,11 +2,6 @@
 
 {% block app_content %}
     <h1>{{ config.LABELS.storico_fascicolo }}</h1>
-
-    <hr>
-    <a href="{{ url_for('fascicoli.file_delete', code=code) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
-    <a href="{{ url_for('fascicoli.download', code=code) }}">Download QR CODE</a>
-
     <table id="data" class="table table-striped">
         <tr>
           <th>Codice fascicolo</th>
@@ -23,4 +18,12 @@
         </tr>
         {% endfor %}
     </table>
+    <div class="row">
+      <div class="col-sm-2">
+        <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', code=code) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
+      </div>
+      <div class="col-sm-2">
+        <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', code=code) }}">Download QR CODE</a>
+      </div>
+    </div>
 {% endblock %}

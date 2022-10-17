@@ -11,6 +11,7 @@ from wtforms.validators import DataRequired
 from app.models import User
 from app.extension import db
 import os
+from datetime import datetime
 
 def generate_and_download_qr_code(code):
     qr = qrcode.QRCode(
@@ -59,37 +60,37 @@ def generation():
         
         generate_and_download_qr_code(str(form.codice.data)+"-"+str(form.anno.data))
         
-        file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), user_id=current_user.id)
+        file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), created=datetime.now(), user_id=current_user.id)
         
         db.session.add(file)
         db.session.commit()
-
-        files = Files.query.filter_by(code=form.codice.data).all()
 
         return redirect(url_for('fascicoli.file_details', code=str(form.codice.data)+"-"+str(form.anno.data)))
 
     return render_template('qr_generation/generate_code.html', title=current_app.config["LABELS"]["generation_title"], form=form)
 
+
 @bp.route('/<code>', methods=('GET', 'POST'))
 @login_required
 def file_details(code):
     
-    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
+    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created.desc()).all()
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
+
 
 @bp.route('/<code>/add', methods=('GET', 'POST'))
 @login_required
 def file_add(code):
     
-    file = Files(code=code, user_id=current_user.id)
+    file = Files(code=code, created=datetime.now(), user_id=current_user.id)
         
     db.session.add(file)
     db.session.commit()
     
-    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created).order_by(Files.created).all()
     
-    return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files)
+    return redirect(url_for('fascicoli.file_details', code=code))
+
 
 @bp.route('/<code>/delete', methods=('GET', 'POST'))
 @login_required

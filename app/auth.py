@@ -5,10 +5,17 @@ from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Re
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
-from app.extension import db
-import smtplib
-import email.utils
-from email.mime.text import MIMEText
+from app.extension import db, mail
+from flask_mail import Message
+
+
+def send_email(subject, sender, recipients, text_body, html_body):
+    msg = Message(subject, sender=sender, recipients=recipients)
+    msg.body = text_body
+    msg.html = html_body
+    
+    with current_app.app_context():
+        mail.send(msg)
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -48,7 +55,7 @@ def register():
 
     form = RegistrationForm()
 
-    if form.validate_on_submit(): #and form.email.data[-13:] == "@giustizia.it":
+    if form.validate_on_submit() and form.email.data[-13:] == "@giustizia.it":
 
         nome, cognome = form.email.data.split("@")[0].split(".")
 
@@ -61,13 +68,10 @@ def register():
 
         # Invia e-mail di conferma account.
 
-        msg = MIMEText("Registrazione avvenuta con successo!")
-        msg['To'] = email.utils.formataddr(('Recipient', form.email.data))
-        msg['From'] = email.utils.formataddr(('Author', current_app.config["MAIL_SENDER"]))
-        msg['Subject'] = 'Simple test message'
-
-        with smtplib.SMTP(current_app.config["MAIL_SERVER"], current_app.config["MAIL_PORT"]) as server:
-            server.sendmail(current_app.config["MAIL_SENDER"], form.email.data, msg.as_string())
+        msg = Message('Esito registrazione', sender=current_app.config['MAIL_SENDER'], 
+                      recipients=[form.email.data])
+        msg.body = "Registrazione avvenuta con successo!"
+        mail.send(msg)
 
         return redirect(url_for('auth.login'))
 
@@ -119,3 +123,67 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+
+@bp.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+
+    class ResetPasswordRequestForm(FlaskForm):
+        email = StringField(current_app.config["LABELS"]["email"], validators=[DataRequired(), Email()])
+        submit = SubmitField(current_app.config["LABELS"]["request_password_reset"])
+
+
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.get_reset_password_token()
+
+            # Invio email.
+            
+            send_email(subject=current_app.config["LABELS"]["password_reset_mail"],
+                       sender=current_app.config['MAIL_SENDER'],
+                       recipients=[form.email.data], 
+                       text_body=render_template('email/reset_password.txt',  user=user, token=token),
+                       html_body=render_template('email/reset_password.html', user=user, token=token))
+
+        flash('Controlla la tua email per le istruzioni per il reset della password')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/password_reset_request.html', 
+                           title=current_app.config["LABELS"]["password_reset"], 
+                           form=form)
+
+
+@bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+
+    class ResetPasswordForm(FlaskForm):
+        password = PasswordField('Password', validators=[DataRequired()])
+        password2 = PasswordField(
+            'Ripeti Password', validators=[DataRequired(), EqualTo('password')])
+        submit = SubmitField('Richiedi modifica password')
+
+
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    user = User.verify_reset_password_token(token)
+
+    if not user:
+        return redirect(url_for('index'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+
+        flash('Your password has been reset.')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password.html', form=form)
+
