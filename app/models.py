@@ -13,7 +13,9 @@ class User(UserMixin, db.Model):
     cognome = db.Column(db.String(32), index=True)
     email = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(128))
+    ruolo = db.Column(db.String(32), index=True)
     ufficio = db.Column(db.String(32), index=True)
+    confirmed = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Email {}>'.format(self.email)
@@ -34,6 +36,20 @@ class User(UserMixin, db.Model):
         try:
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
+
+    def get_registration_token(self, expires_in=600):
+        return jwt.encode(
+            {'registration': self.id, 'exp': time() + expires_in},
+            current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_registration_token(token):
+        try:
+            id = jwt.decode(token, current_app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['registration']
         except:
             return
         return User.query.get(id)

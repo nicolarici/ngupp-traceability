@@ -1,4 +1,3 @@
-from ensurepip import bootstrap
 from flask import Flask, render_template, request
 from app.models import Files, User
 from config import Config
@@ -14,7 +13,6 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
-    bootstrap = Bootstrap(app)
 
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
     if not os.path.exists(uploads):
@@ -36,6 +34,9 @@ def create_app():
 
     from app.extension import mail
     mail.init_app(app)
+
+    from app.extension import bootstrap
+    bootstrap.init_app(app)
 
 
     @app.route('/')
@@ -97,8 +98,6 @@ def create_app():
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),
         }
-
-
 
 
     # Aggiunge le blueprint

@@ -1,0 +1,12 @@
+<p>Caro {{ user.username }},</p>
+<p>
+    grazie per esserti registrato su Traccibilità fascicoli.
+    Per confermare la tua registrazione:
+    <a href="{{ url_for('auth.confirm_registration', token=token, _external=True) }}">
+        clicca qui.
+    </a>.
+</p>
+<p>In alternativa puoi copiare e incollare il seguente link nella barra di ricerca:</p>
+t<p>{{ url_for('auth.confirm_registration', token=token, _external=True) }}</p>
+<p>Cordialmente,</p>
+<p>Il team di Traccibilità Fascicoli</p>

@@ -4,10 +4,10 @@
     <h1>{{ config.LABELS.storico_fascicolo }}</h1>
     <table id="data" class="table table-striped">
         <tr>
-          <th>Codice fascicolo</th>
-          <th>Utente in possesso</th>
-          <th>Ufficio</th>
-          <th>Data</th>
+          <th>config.LABELS.codice</th>
+          <th>config.LABELS.utente_possesso</th>
+          <th>config.LABELS.ufficio</th>
+          <th>config.LABELS.data</th>
         </tr>
         {% for fascicolo in files %}
         <tr>
@@ -23,7 +23,7 @@
         <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', code=code) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
       </div>
       <div class="col-sm-2">
-        <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', code=code) }}">Download QR CODE</a>
+        <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', code=code) }}">{{ config.LABELS.download_QR }}</a>
       </div>
     </div>
 {% endblock %}
