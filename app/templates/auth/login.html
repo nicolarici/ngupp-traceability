@@ -14,8 +14,8 @@
         <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
     </p>
     <p>
-        config.LABELS.forgot_password
-        <a href="{{ url_for('auth.reset_password_request') }}">config.LABELS.reset_password_click</a>
+        {{config.LABELS.forgot_password}}
+        <a href="{{ url_for('auth.reset_password_request') }}">{{config.LABELS.reset_password_click}}</a>
     </p>
 {% endblock %}
 
