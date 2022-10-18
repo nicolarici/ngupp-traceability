@@ -15,6 +15,7 @@
     "codice_anno":"Anno",
     "codice_esistente":"Codice fascicolo già esistente",
     "elimina_fascicolo":"Elimina fascicolo",
+    "elimina_record":"Elimina riga",
     "genera":"Genera codice QR",
     "generation_title":"Generazione codice QR",
     "storico_fascicolo":"Storico fascicolo",
