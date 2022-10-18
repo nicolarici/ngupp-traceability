@@ -1,0 +1,10 @@
+Caro {{ user.username }},
+
+grazie per esserti registrato su Traccibilità fascicoli.
+Di seguito trovi il link per confermare la tua registrazione:
+
+{{ url_for('auth.confirm_registration', token=token, _external=True) }}
+
+Cordialmente,
+
+Il team di Traccibilità Fascicoli

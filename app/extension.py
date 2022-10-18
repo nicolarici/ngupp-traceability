@@ -12,3 +12,7 @@ login = LoginManager()
 
 from flask_mail import Mail
 mail = Mail()
+
+
+from flask_bootstrap import Bootstrap
+bootstrap = Bootstrap()

@@ -40,7 +40,8 @@ flask db upgrade
 # Mail-server
 Fake email server start
 ```console
-python -m smtpd -c DebuggingServer -n localhost:1025
+conda activate ngupp
+python email_server.py
 ```
 
 

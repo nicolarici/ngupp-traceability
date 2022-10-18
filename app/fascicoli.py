@@ -1,32 +1,15 @@
-import code
 import datetime
+import os
 import qrcode
-from pathlib import Path
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
 from flask_login import login_required,current_user
 from app.models import Files
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, IntegerField
+from wtforms import SubmitField, IntegerField
 from wtforms.validators import DataRequired
 from app.models import User
 from app.extension import db
-import os
 from datetime import datetime
-
-def generate_and_download_qr_code(code):
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=10,
-        border=4,
-    )
-    qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{code}/add")
-    qr.make(fit=True)
-
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save(f"app/static/img/{code}.png")
-
-    return
 
 
 bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
@@ -58,7 +41,22 @@ def generation():
             flash(current_app.config["LABELS"]["codice_esistente"])
             return redirect(url_for('fascicoli.generation'))
         
-        generate_and_download_qr_code(str(form.codice.data)+"-"+str(form.anno.data))
+
+        # Create QR code
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        code = str(form.codice.data) + "-" + str(form.anno.data)
+        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{code}/add")
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save(f"app/static/img/{code}.png")
+
         
         file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), created=datetime.now(), user_id=current_user.id)
         
