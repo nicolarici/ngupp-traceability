@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     cognome = db.Column(db.String(32), index=True)
     email = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(128))
-    ruolo = db.Column(db.String(32), index=True)
+    nome_ufficio = db.Column(db.String(32), index=True)
     ufficio = db.Column(db.String(32), index=True)
     confirmed = db.Column(db.Boolean, default=False)
 

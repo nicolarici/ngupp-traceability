@@ -51,6 +51,7 @@
     "required": "Campo obbligatorio",
     "ruolo": "Ruolo",
     "ufficio": "Ufficio",
+    "nome_ufficio": "Nome ufficio (opzionale)",
     "utente_possesso": "Utente in possesso",
     "user_modified": "Informazioni aggiornate correttamente"
 }

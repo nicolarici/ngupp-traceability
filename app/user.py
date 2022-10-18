@@ -24,6 +24,9 @@ def user(id):
                         default=user.cognome,
                         validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
+        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio"], 
+                        default=user.nome_ufficio)
+        
         ufficio = StringField(current_app.config["LABELS"]["ufficio"], 
                         default=user.ufficio, 
                         validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
@@ -36,6 +39,7 @@ def user(id):
         user.nome = form.nome.data
         user.cognome = form.cognome.data
         user.ufficio = form.ufficio.data
+        user.nome_ufficio = form.nome_ufficio.data
 
         db.session.commit()
 

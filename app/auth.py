@@ -38,8 +38,7 @@ def register():
 
         confirm  = PasswordField(current_app.config["LABELS"]["confirm_password"])
 
-        ruolo = StringField(current_app.config["LABELS"]["ruolo"], 
-                        validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio"])
 
         ufficio = StringField(current_app.config["LABELS"]["ufficio"], 
                         validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
@@ -69,7 +68,7 @@ def register():
         except:
             cognome = ""
 
-        user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data)
+        user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data, nome_ufficio=form.nome_ufficio.data)
         user.set_password(form.password.data)
 
         db.session.add(user)
