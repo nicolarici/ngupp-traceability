@@ -51,7 +51,16 @@
     "required": "Campo obbligatorio",
     "ruolo": "Ruolo",
     "ufficio": "Ufficio",
-    "nome_ufficio": "Nome ufficio (opzionale)",
+    "nome_ufficio_opz": "Nome ufficio (opzionale)",
     "utente_possesso": "Utente in possesso",
-    "user_modified": "Informazioni aggiornate correttamente"
+    "user_modified": "Informazioni aggiornate correttamente",
+    "visualizza_utenti": "Visualizza utenti",
+    "lista_utenti": "Lista utenti",
+    "utente": "Utente",
+    "email_utente": "Email utente",
+    "nome_ufficio": "Nome ufficio",
+    "promote": "Promuovi a utente avanzato",
+    "demote": "Rimuovi utente avanzato",
+    "privilegi": "Privilegi utente avanzato"
+    
 }

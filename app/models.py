@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     nome_ufficio = db.Column(db.String(32), index=True)
     ufficio = db.Column(db.String(32), index=True)
     confirmed = db.Column(db.Boolean, default=False)
+    superuser=db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<Email {}>'.format(self.email)

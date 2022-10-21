@@ -7,6 +7,7 @@
           <th>config.LABELS.codice</th>
           <th>config.LABELS.utente_possesso</th>
           <th>config.LABELS.ufficio</th>
+          <th>config.LABELS.nome_ufficio</th>
           <th>config.LABELS.data</th>
         </tr>
         {% for fascicolo in files %}
@@ -14,6 +15,7 @@
           <td>{{ fascicolo.code }}</td>
           <td>{{ fascicolo.nome + " " + fascicolo.cognome }}</td>
           <td>{{ fascicolo.ufficio }}</td>
+          <td>{{ fascicolo.nome_ufficio }}</td>
           <td>{{ fascicolo.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
           <td>{% if  fascicolo.id == current_user.id %}
             <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', code=code, created=fascicolo.created) }}">{{ config.LABELS.elimina_record }}</a>

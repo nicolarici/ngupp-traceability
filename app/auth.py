@@ -38,7 +38,7 @@ def register():
 
         confirm  = PasswordField(current_app.config["LABELS"]["confirm_password"])
 
-        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio"])
+        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio_opz"])
 
         ufficio = StringField(current_app.config["LABELS"]["ufficio"], 
                         validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
@@ -52,7 +52,7 @@ def register():
             if user is not None:
                 raise ValidationError(current_app.config["LABELS"]["email_alredy_used"])
 
-
+            
     if current_user.is_authenticated:
         return redirect(url_for('index'))
 
@@ -67,8 +67,13 @@ def register():
             cognome = nome_cognome[1].capitalize()
         except:
             cognome = ""
+            
+        superuser=False
+        if form.email.data == current_app.config["ADMIN_MAIL"]:
+            superuser = True
+        
 
-        user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data, nome_ufficio=form.nome_ufficio.data)
+        user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data, nome_ufficio=form.nome_ufficio.data, superuser=superuser)
         user.set_password(form.password.data)
 
         db.session.add(user)

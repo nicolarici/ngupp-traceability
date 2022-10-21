@@ -72,7 +72,7 @@ def generation():
 @login_required
 def file_details(code):
     
-    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, User.id, Files.code, Files.created).order_by(Files.created.desc()).all()
+    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio,User.nome_ufficio ,User.id, Files.code, Files.created).order_by(Files.created.desc()).all()
     
     return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
 

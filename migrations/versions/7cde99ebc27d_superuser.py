@@ -1,8 +1,8 @@
-"""user modified
+"""superuser
 
-Revision ID: 30b4ee631a6e
+Revision ID: 7cde99ebc27d
 Revises: 
-Create Date: 2022-10-18 11:45:19.505644
+Create Date: 2022-10-18 12:24:13.279007
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '30b4ee631a6e'
+revision = '7cde99ebc27d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +36,7 @@ def upgrade():
     sa.Column('nome_ufficio', sa.String(length=32), nullable=True),
     sa.Column('ufficio', sa.String(length=32), nullable=True),
     sa.Column('confirmed', sa.Boolean(), nullable=True),
+    sa.Column('superuser', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_cognome'), 'user', ['cognome'], unique=False)
