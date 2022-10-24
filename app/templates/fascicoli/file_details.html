@@ -14,6 +14,7 @@
           <td>{{ fascicolo.nome + " " + fascicolo.cognome }}</td>
           <td>{{ fascicolo.nome_ufficio }}</td>
           <td>{{ fascicolo.ufficio }}</td>
+          <td>{{ fascicolo.nome_ufficio }}</td>
           <td>{{ fascicolo.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
           <td>{% if  fascicolo.id == current_user.id %}
             <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=fascicolo.id) }}">{{ config.LABELS.elimina_record }}</a>

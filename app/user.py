@@ -24,7 +24,7 @@ def user(id):
                         default=user.cognome,
                         validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
-        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio"], 
+        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio_opz"], 
                         default=user.nome_ufficio)
         
         ufficio = StringField(current_app.config["LABELS"]["ufficio"], 

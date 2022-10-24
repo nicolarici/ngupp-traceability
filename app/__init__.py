@@ -121,5 +121,7 @@ def create_app():
     from . import fascicoli
     app.register_blueprint(fascicoli.bp)
 
-
+    from . import superuser
+    app.register_blueprint(superuser.bp)
+    
     return app

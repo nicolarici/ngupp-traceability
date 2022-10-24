@@ -23,3 +23,4 @@ class Config(object):
     MAIL_PORT = 1025            # int(os.environ.get('MAIL_PORT')) or 1025
 
     MAIL_SENDER = "no-replay-tracciabilita@giustizia.it"
+    ADMIN_MAIL = "admin.admin@giustizia.it"

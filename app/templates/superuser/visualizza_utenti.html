@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ title }}</h1>
+    <table id="data" class="table table-striped">
+        <tr>
+          <th>{{config.LABELS.nome_utente}}</th>
+          <th>{{config.LABELS.email_utente}}</th>
+          <th>{{config.LABELS.ufficio}}</th>
+          <th>{{config.LABELS.nome_ufficio}}</th>
+          <th>{{config.LABELS.privilegi}}</th>
+
+        </tr>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.nome + " " + user.cognome }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.ufficio }}</td>
+          <td>{{ user.nome_ufficio }}</td>
+          <td>{{ user.superuser }}</td>
+          <td>
+            {% if  user.superuser == False %}
+                <a class="btn btn-success btn-md" href="{{ url_for('superuser.promote', user_id=user.id) }}">{{ config.LABELS.promote }}</a>
+            {% else %}
+                <a class="btn btn-danger btn-md" href="{{ url_for('superuser.demote', user_id=user.id) }}">{{ config.LABELS.demote }}</a>
+            {% endif %}
+        </td>
+        </tr> 
+        {% endfor %}
+    </table>
+{% endblock %}
