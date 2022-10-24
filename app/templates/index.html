@@ -5,9 +5,12 @@
     <table id="data" class="table table-striped">
         <thead>
           <tr>
-            <th>{{ config.LABELS.codice }}</th>
+            <th>{{ config.LABELS.rg16 }}</th>
+            <th>{{ config.LABELS.rg20 }}</th>
+            <th>{{ config.LABELS.rg21 }}</th>
             <th>{{ config.LABELS.utente_possesso }}</th>
-            <th>{{ config.LABELS.ufficio }}</th>
+            <th>{{ config.LABELS.nome_ufficio }}</th>
+            <th>{{ config.LABELS.num }}</th>
             <th>{{ config.LABELS.data }}</th>
           </tr>
         </thead>
@@ -24,9 +27,12 @@
         },
         ajax: '/api/data',
         columns: [
-          {data: 'code', orderable: false},
+          {data: 'RG16', orderable: false},
+          {data: 'RG20', orderable: false},
+          {data: 'RG21', orderable: false},
           {data: 'user_name', orderable: false},
-          {data: 'user_office', orderable: false},
+          {data: 'office_name', orderable: false},
+          {data: 'office_number', orderable: false},
           {data: 'created'},
         ],
       });

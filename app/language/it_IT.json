@@ -49,9 +49,14 @@
     "reconfirm_registration_subtitle": "Non hai ancora confermato l'account, se non hai ricevuto l'e-mail di conferma, inserisci qua sotto il tuo inidirizzo e-mail e ti invieremo una nuova e-mail di conferma.",
     "remember_me": "Ricordami",
     "required": "Campo obbligatorio",
+    "rg21": "RG21",
+    "rg20": "RG20",
+    "rg16": "RG16",
     "ruolo": "Ruolo",
     "ufficio": "Ufficio",
-    "nome_ufficio": "Nome ufficio (opzionale)",
+    "nome_ufficio_opzionale": "Nome ufficio (opzionale)",
+    "nome_ufficio": "Nome ufficio",
+    "num": "N°",
     "utente_possesso": "Utente in possesso",
     "user_modified": "Informazioni aggiornate correttamente"
 }

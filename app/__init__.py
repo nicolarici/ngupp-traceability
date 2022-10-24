@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request
-from app.models import Files, User
+from app.models import Files, History, User
 from config import Config
 from flask_login import login_required
-from flask_bootstrap import Bootstrap
 import os
 
 """
@@ -48,13 +47,21 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        query = Files.query.join(User, User.id==Files.user_id).add_columns(User.nome, User.cognome, User.ufficio, Files.code, Files.created)
+        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.anno, Files.rg16, Files.rg20, Files.rg21, History.created).distinct()
+
         
         # search filter
         search = request.args.get('search[value]')
         if search:
             query = query.filter(db.or_(
-                Files.code.like(f'%{search}%'),
+                User.nome.like(f'%{search}%'),
+                User.cognome.like(f'%{search}%'),
+                User.nome_ufficio.like(f'%{search}%'),
+                User.ufficio.like(f'%{search}%'),
+                Files.rg16.like(f'%{search}%'),
+                Files.rg20.like(f'%{search}%'),
+                Files.rg21.like(f'%{search}%'),
+                Files.anno.like(f'%{search}%')
             ))
         total_filtered = query.count()
 
@@ -85,9 +92,12 @@ def create_app():
 
         def render_file(file):
             return {
-                'code': file.code,
+                'RG16': file.rg16,
+                'RG20': file.rg20,
+                'RG21': file.rg21,
                 'user_name': file.nome + ' ' + file.cognome,
-                'user_office': file.ufficio,
+                'office_name': file.nome_ufficio,
+                'office_number': file.ufficio,
                 'created': file.created.strftime(' %d/%m/%Y %H:%M ')
             }
 

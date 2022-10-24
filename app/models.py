@@ -62,9 +62,20 @@ def load_user(id):
 
 class Files(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(32), index=True)
+    rg21 = db.Column(db.String(8), index=True)
+    rg20 = db.Column(db.String(8), index=True)
+    rg16 = db.Column(db.String(8), index=True)
+    anno = db.Column(db.String(4), index=True)
+
+    def __repr__(self):
+        return f"<File {self.id}>"
+
+
+class History(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, index=True)
+    file_id = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return '<File {}>'.format(self.code)
+        return f"<History {self.id}>"
