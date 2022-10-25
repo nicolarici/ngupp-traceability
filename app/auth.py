@@ -101,19 +101,16 @@ def register():
 @bp.route('/confirm_registration/<token>', methods=['GET', 'POST'])
 def confirm_registration(token):
 
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-
     user = User.verify_registration_token(token)
 
-    if not user:
+    if user is None:
         return redirect(url_for('index'))
 
     user.confirmed = True
     db.session.commit()
 
     flash(current_app.config["LABELS"]["registration_confirmed"])
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('auth.logout'))
 
 
 
@@ -145,7 +142,7 @@ def re_confirm_registration():
                        html_body=render_template('email/confirm_registration.html', user=user, token=token))
 
         flash(current_app.config["LABELS"]["registration_email_sent"])
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.logout'))
 
     return render_template('auth/reconfirm_registration.html', 
                            title=current_app.config["LABELS"]["password_reset"], 

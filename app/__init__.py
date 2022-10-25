@@ -47,7 +47,7 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.anno, Files.rg16, Files.rg20, Files.rg21, History.created).distinct()
+        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.id, Files.rg16, Files.rg20, Files.rg21, Files.anno, History.created).distinct()
 
         
         # search filter
@@ -92,9 +92,11 @@ def create_app():
 
         def render_file(file):
             return {
+                'file_id': file.id,
                 'RG16': file.rg16,
                 'RG20': file.rg20,
                 'RG21': file.rg21,
+                'anno': file.anno,
                 'user_name': file.nome + ' ' + file.cognome,
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,

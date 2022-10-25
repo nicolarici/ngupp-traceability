@@ -1,33 +1,86 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>{{ config.LABELS.storico_fascicolo }}</h1>
+    <h1>{{ config.LABELS.dettaglio_fascicolo }}</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-1">
+          <h5><b>{{ config.LABELS.rg21 }}</b></h5>
+        </div>
+        <div class="col-sm-1">
+          {% if file.rg21 %}
+          <h5>{{ file.rg21 }}</h5>
+          {% else %}
+          <h5></h5>
+          {% endif %}        
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-1">
+          <h5><b>{{ config.LABELS.rg20 }}</b></h5>
+        </div>
+        <div class="col-sm-1">
+          {% if file.rg20 %}
+          <h5>{{ file.rg20 }}</h5>
+          {% else %}
+          <h5></h5>
+          {% endif %}        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-1">
+          <h5><b>{{ config.LABELS.rg16 }}</b></h5>
+        </div>
+        <div class="col-sm-1">
+          {% if file.rg16 %}
+          <h5>{{ file.rg16 }}</h5>
+          {% else %}
+          <h5></h5>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-1">
+          <h5><b>{{ config.LABELS.codice_anno }}</b></h5>
+        </div>
+        <div class="col-sm-1">
+          <h5>{{ file.anno }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <h3>{{ config.LABELS.storico_fascicolo }}</h3>
     <table id="data" class="table table-striped">
         <tr>
           <th>{{ config.LABELS.utente_possesso }}</th>
           <th>{{ config.LABELS.nome_ufficio }}</th>
           <th>{{ config.LABELS.num }}</th>
           <th>{{ config.LABELS.data }}</th>
+          <th>{{ config.LABELS.azione }}</th>
         </tr>
-        {% for fascicolo in files %}
+        {% for h in hist %}
         <tr>
-          <td>{{ fascicolo.nome + " " + fascicolo.cognome }}</td>
-          <td>{{ fascicolo.nome_ufficio }}</td>
-          <td>{{ fascicolo.ufficio }}</td>
-          <td>{{ fascicolo.nome_ufficio }}</td>
-          <td>{{ fascicolo.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
-          <td>{% if  fascicolo.id == current_user.id %}
-            <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=fascicolo.id) }}">{{ config.LABELS.elimina_record }}</a>
+          <td>{{ h.nome + " " + h.cognome }}</td>
+          <td>{{ h.nome_ufficio }}</td>
+          <td>{{ h.ufficio }}</td>
+          <td>{{ h.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
+          <td>{% if  h.id == current_user.id %}
+            <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=h.id) }}">{{ config.LABELS.elimina_record }}</a>
           {% endif %}</td>
         </tr> 
         {% endfor %}
     </table>
-    <div class="row">
-      <div class="col-sm-2">
-        <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', file_id=file_id) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
-      </div>
-      <div class="col-sm-2">
-        <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', file_id=file_id) }}">{{ config.LABELS.download_QR }}</a>
-      </div>
-    </div>
+    <h3>{{ config.LABELS.azioni }}</h3>
+    <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
+    <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a><br />
+    <a class="btn btn-info btn-md" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a><br />
+    <a class="btn btn-success btn-md" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a><br />
 {% endblock %}

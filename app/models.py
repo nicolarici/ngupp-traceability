@@ -52,13 +52,20 @@ class User(UserMixin, db.Model):
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['registration']
         except:
-            return
+            return None
         return User.query.get(id)
 
 
 @login.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    try:
+        user = User.query.get(int(id))
+        if user.confirmed:
+            return user
+        else:
+            return None
+    except:
+        return None
 
 
 class Files(db.Model):

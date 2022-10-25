@@ -1,13 +1,15 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>Buongiorno, {{ current_user.nome }}!</h1>
+    <h2>{{ config.LABELS.movimentazioni }}</h2>
     <table id="data" class="table table-striped">
         <thead>
           <tr>
+            <th></th>
             <th>{{ config.LABELS.rg16 }}</th>
             <th>{{ config.LABELS.rg20 }}</th>
             <th>{{ config.LABELS.rg21 }}</th>
+            <th>{{ config.LABELS.codice_anno }}</th>
             <th>{{ config.LABELS.utente_possesso }}</th>
             <th>{{ config.LABELS.nome_ufficio }}</th>
             <th>{{ config.LABELS.num }}</th>
@@ -21,26 +23,34 @@
 {% block scripts %}
   <script>
     $(document).ready(function () {
-      var table=$('#data').DataTable({
+      var table = $('#data').DataTable({
         language: {
             url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
         },
         ajax: '/api/data',
         columns: [
-          {data: 'RG16', orderable: false},
-          {data: 'RG20', orderable: false},
-          {data: 'RG21', orderable: false},
-          {data: 'user_name', orderable: false},
-          {data: 'office_name', orderable: false},
-          {data: 'office_number', orderable: false},
+          {data: 'file_id', visible: false, searchable: false},
+          {data: 'RG16'},
+          {data: 'RG20'},
+          {data: 'RG21'},
+          {data: 'anno'},
+          {data: 'user_name'},
+          {data: 'office_name'},
+          {data: 'office_number'},
           {data: 'created'},
         ],
       });
 
       table.on('click', 'tr', function () {
         var data = table.row(this).data();
-        location.href = "/fascicoli/" + data.code;
+        location.href = "/fascicoli/" + data.file_id;
       });
+
+      $('#data_filter').css("float", 'right');
+
   });
+
+
+  
   </script>
 {% endblock %}
