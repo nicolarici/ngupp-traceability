@@ -47,7 +47,7 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.id, Files.rg16, Files.rg20, Files.rg21, Files.anno, History.created).distinct()
+        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.id, Files.rg16, Files.rg20, Files.rg21, Files.anno, History.created)
 
         
         # search filter
@@ -100,12 +100,20 @@ def create_app():
                 'user_name': file.nome + ' ' + file.cognome,
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
-                'created': file.created.strftime(' %d/%m/%Y %H:%M ')
+                'created': file.created.strftime(' %H:%M - %d/%m/%Y ')
             }
+    
+        distinct_files = {}
+        for file in query:
+            if file.id not in distinct_files:
+                distinct_files[file.id] = render_file(file)
+
+        print(len(distinct_files))
 
         # response
         return {
-            'data': [render_file(file) for file in query],
+            'data': list(distinct_files.values()),
+            #'data': [render_file(file) for file in query],
             'recordsFiltered': total_filtered,
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),
