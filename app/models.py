@@ -6,7 +6,7 @@ from time import time
 import jwt
 
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model):  # type: ignore
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(32), index=True)
@@ -68,7 +68,7 @@ def load_user(id):
         return None
 
 
-class Files(db.Model):
+class Files(db.Model):  # type: ignore
     id = db.Column(db.Integer, primary_key=True)
     rg21 = db.Column(db.String(8), index=True)
     rg20 = db.Column(db.String(8), index=True)
@@ -79,7 +79,7 @@ class Files(db.Model):
         return f"<File {self.id}>"
 
 
-class History(db.Model):
+class History(db.Model):  # type: ignore
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, index=True)
     file_id = db.Column(db.Integer, index=True)

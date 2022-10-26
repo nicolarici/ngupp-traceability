@@ -126,4 +126,7 @@ def create_app():
     from . import superuser
     app.register_blueprint(superuser.bp)
     
+    from . import statistics
+    app.register_blueprint(statistics.bp)
+    
     return app

@@ -1,26 +1,47 @@
+from msilib.schema import File
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
 from flask_login import login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from app.models import User, Files
+from app.models import User, Files, History
 from app.extension import db
 import config
-import datetime
+from datetime import datetime, timedelta
 
 def numero_fascicoli_ufficio(ufficio):
-    return Files.query.filter_by(ufficio=ufficio).count()
-
+    return db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).count()
+    
 def media_tempo_per_ufficio(ufficio):
-    files=Files.query.filter_by(ufficio=ufficio).all()
-    media=datetime.timedelta()
-    for file in files:
-        media=media+file.created
-    return media/len(files)
+    files=db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
+    tempo_totale=0    
+    for i in range(len(files)-1):
+        tempo_totale=tempo_totale+(files[i+1][1].created-files[i][1].created).total_seconds()
+        
+    return GetTime(round(tempo_totale/len(files)))
 
-class statistic():
-    def __init__(self, ufficio):
+
+def GetTime(time):
+    day = time // (24 * 3600)
+    time = time % (24 * 3600)
+    hour = time // 3600
+    time %= 3600
+    minutes = time // 60
+    time %= 60
+    
+    if day == 0 and hour == 0 and minutes == 0:
+        return "%d m" %  1
+    elif day == 0 and hour == 0:
+        return "%d m" % (minutes)
+    elif day == 0:
+        return "%d o %d m" % (hour, minutes)
+    else:
+        return "%d g, %d o, %d m" % (day, hour, minutes)
+
+class Statistic():
+    def __init__(self, ufficio, nome_ufficio):
         self.ufficio=ufficio
+        self.nome_ufficio=nome_ufficio
         self.numero_fascicoli=numero_fascicoli_ufficio(ufficio)
         self.media_tempo=media_tempo_per_ufficio(ufficio)
 
@@ -33,12 +54,10 @@ def view():
     users=User.query.filter(User.email!=current_app.config["ADMIN_MAIL"]).all()
     uffici=[]
     for user in users:
-        uffici.append(user.ufficio)
+        uffici.append([user.ufficio, user.nome_ufficio])
+    statistics= []
     
     for ufficio in uffici:
-        
-        print(statistic(ufficio).ufficio)
-        print(statistic(ufficio).numero_fascicoli)
-        print(statistic(ufficio).media_tempo)
+        statistics.append(Statistic(ufficio[0], ufficio[1]))
     
-    return render_template('statistics/view.html', title=current_app.config["LABELS"]["statistics"])
+    return render_template('statistics/statistics.html', title=current_app.config["LABELS"]["statistics"], statistics=statistics)

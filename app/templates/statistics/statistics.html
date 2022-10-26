@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ title }}</h1>
+    <table id="data" class="table table-striped">
+        <tr>
+          <th>{{config.LABELS.ufficio}}</th>
+          <th>{{config.LABELS.nome_ufficio}}</th>
+          <th>{{config.LABELS.numero_fascicoli}}</th>
+          <th>{{config.LABELS.tempo_medio}}</th>
+        </tr>
+        {% for stat in statistics %}
+        <tr>
+          <td>{{ stat.ufficio }}</td>
+          <td>{{ stat.nome_ufficio }}</td>
+          <td>{{ stat.numero_fascicoli }}</td>
+          <td>{{ stat.media_tempo }}</td>
+        </tr> 
+        {% endfor %}
+    </table>
+{% endblock %}
