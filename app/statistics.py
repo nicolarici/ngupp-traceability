@@ -50,7 +50,11 @@ bp = Blueprint('statistics', __name__, url_prefix='/statistics')
 @bp.route('/view', methods=('GET', 'POST'))
 @login_required
 def view():
-    
+    return render_template('statistics/statistics.html', title=current_app.config["LABELS"]["statistics"])
+
+@bp.route('/api/data')
+@login_required
+def data():
     users=User.query.filter(User.email!=current_app.config["ADMIN_MAIL"]).all()
     uffici=[]
     for user in users:
@@ -60,4 +64,14 @@ def view():
     for ufficio in uffici:
         statistics.append(Statistic(ufficio[0], ufficio[1]))
     
-    return render_template('statistics/statistics.html', title=current_app.config["LABELS"]["statistics"], statistics=statistics)
+    def render_file(stat):
+        return {
+            'ufficio': stat.ufficio,
+            'nome_ufficio': stat.nome_ufficio,
+            'numero_fascicoli': stat.numero_fascicoli,
+            'media_tempo': stat.media_tempo
+        }
+    return {'data': [render_file(stat) for stat in statistics]}
+
+    
+    
