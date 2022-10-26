@@ -17,13 +17,31 @@
           <td>{{ user.ufficio }}</td>
           <td>{{ user.nome_ufficio }}</td>
           <td>
+            <meta id="user_id" data-user="{{ user.id }}">
             {% if  user.superuser == False %}
-                <a class="btn btn-success btn-md" href="{{ url_for('superuser.promote', user_id=user.id) }}">{{ config.LABELS.promote }}</a>
+                <a class="btn btn-success btn-md" id="btn_promote">{{ config.LABELS.promote }}</a>
             {% else %}
-                <a class="btn btn-danger btn-md" href="{{ url_for('superuser.demote', user_id=user.id) }}">{{ config.LABELS.demote }}</a>
+                <a class="btn btn-danger btn-md" id="btn_demote">{{ config.LABELS.demote }}</a>
             {% endif %}
         </td>
         </tr> 
         {% endfor %}
     </table>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var user_id = $('#user_id').data("user");
+        $('#btn_promote').click(function () { 
+            if (confirm("Vuoi confermare?")) {
+                location.href = "/su/promote/" + user_id;
+
+            }
+        });
+        $('#btn_demote').click(function () { 
+            if (confirm("Vuoi confermare?")) {
+                location.href = "/su/demote/" + user_id;
+
+            }
+    });
+        </script>
 {% endblock %}

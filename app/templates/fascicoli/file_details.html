@@ -79,8 +79,19 @@
         {% endfor %}
     </table>
     <h3>{{ config.LABELS.azioni }}</h3>
-    <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
+    <meta id="file_id" data-file="{{ file.id }}">
+    <a class="btn btn-danger btn-md" id="btn">{{ config.LABELS.elimina_fascicolo }}</a><br />
     <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a><br />
     <a class="btn btn-info btn-md" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a><br />
     <a class="btn btn-success btn-md" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a><br />
+{% endblock %}
+{% block scripts %}
+    <script>
+      var file_id = $('#file_id').data("file");
+      $('#btn').click(function () { 
+          if (confirm("Vuoi confermare?")) {
+              location.href = "/fascicoli/"+file_id+"/delete" ;
+          }
+      });
+        </script>
 {% endblock %}

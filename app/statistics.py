@@ -1,12 +1,7 @@
-from msilib.schema import File
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
 from flask_login import login_required
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
 from app.models import User, Files, History
 from app.extension import db
-import config
 from datetime import datetime, timedelta
 
 def numero_fascicoli_ufficio(ufficio):
@@ -14,9 +9,11 @@ def numero_fascicoli_ufficio(ufficio):
     
 def media_tempo_per_ufficio(ufficio):
     files=db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
-    tempo_totale=0    
+    tempo_totale=0
     for i in range(len(files)-1):
         tempo_totale=tempo_totale+(files[i+1][1].created-files[i][1].created).total_seconds()
+    if tempo_totale == 0 or len(files) == 0:
+        return "0"
         
     return GetTime(round(tempo_totale/len(files)))
 
@@ -62,8 +59,9 @@ def data():
     statistics= []
     
     for ufficio in uffici:
-        statistics.append(Statistic(ufficio[0], ufficio[1]))
-    
+        if numero_fascicoli_ufficio(ufficio[0]) != 0:
+            statistics.append(Statistic(ufficio[0], ufficio[1]))
+                    
     def render_file(stat):
         return {
             'ufficio': stat.ufficio,
