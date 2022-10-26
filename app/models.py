@@ -70,13 +70,16 @@ def load_user(id):
 
 class Files(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    rg21 = db.Column(db.String(8), index=True)
-    rg20 = db.Column(db.String(8), index=True)
-    rg16 = db.Column(db.String(8), index=True)
-    anno = db.Column(db.String(4), index=True)
+    rg21 = db.Column(db.Integer, index=True)
+    rg20 = db.Column(db.Integer, index=True)
+    rg16 = db.Column(db.Integer, index=True)
+    anno = db.Column(db.Integer, index=True)
 
     def __repr__(self):
         return f"<File {self.id}>"
+
+    def __eq__(self, other):
+        return self.rg21 == other.rg21 and self.rg20 == other.rg20 and self.rg16 == other.rg16 and self.anno == other.anno
 
 
 class History(db.Model):

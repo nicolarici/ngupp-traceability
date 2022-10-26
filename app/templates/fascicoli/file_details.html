@@ -2,12 +2,13 @@
 
 {% block app_content %}
     <h1>{{ config.LABELS.dettaglio_fascicolo }}</h1>
+    <br />
     <div class="container">
       <div class="row">
-        <div class="col-sm-1">
+        <div class="col-md-1">
           <h5><b>{{ config.LABELS.rg21 }}</b></h5>
         </div>
-        <div class="col-sm-1">
+        <div class="col-md-1 offset-md-1">
           {% if file.rg21 %}
           <h5>{{ file.rg21 }}</h5>
           {% else %}
@@ -19,10 +20,10 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-1">
+        <div class="col-md-1">
           <h5><b>{{ config.LABELS.rg20 }}</b></h5>
         </div>
-        <div class="col-sm-1">
+        <div class="col-md-1">
           {% if file.rg20 %}
           <h5>{{ file.rg20 }}</h5>
           {% else %}
@@ -33,10 +34,10 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-1">
+        <div class="col-md-1">
           <h5><b>{{ config.LABELS.rg16 }}</b></h5>
         </div>
-        <div class="col-sm-1">
+        <div class="col-md-1 offset-md-1">
           {% if file.rg16 %}
           <h5>{{ file.rg16 }}</h5>
           {% else %}
@@ -48,15 +49,35 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-sm-1">
+        <div class="col-md-1">
           <h5><b>{{ config.LABELS.codice_anno }}</b></h5>
         </div>
-        <div class="col-sm-1">
+        <div class="col-md-1 offset-md-1">
           <h5>{{ file.anno }}</h5>
         </div>
       </div>
     </div>
 
+    <br /><hr>
+    <h3>{{ config.LABELS.azioni }}</h3>
+
+      <div class="row">
+        <div class="col-md-2">
+          <a class="btn btn-primary btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a>
+        </div>
+        <div class="col-md-2 offset-md-1">
+          <a class="btn btn-info btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a>
+        </div>
+        <div class="col-md-2 offset-md-1">
+          <a class="btn btn-success btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a>
+        </div>
+        <div class="col-md-2 offset-md-1">
+          <a class="btn btn-danger btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina_fascicolo }}</a>
+        </div>
+      </div>  
+
+
+    <br /><hr>
     <h3>{{ config.LABELS.storico_fascicolo }}</h3>
     <table id="data" class="table table-striped">
         <tr>
@@ -72,15 +93,15 @@
           <td>{{ h.nome_ufficio }}</td>
           <td>{{ h.ufficio }}</td>
           <td>{{ h.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
-          <td>{% if  h.id == current_user.id %}
+          <td>{% if h.user_id == current_user.id %}
             <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=h.id) }}">{{ config.LABELS.elimina_record }}</a>
           {% endif %}</td>
         </tr> 
         {% endfor %}
     </table>
-    <h3>{{ config.LABELS.azioni }}</h3>
-    <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina_fascicolo }}</a><br />
-    <a class="btn btn-primary btn-md" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a><br />
-    <a class="btn btn-info btn-md" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a><br />
-    <a class="btn btn-success btn-md" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a><br />
+
+    </div>
+
+
+
 {% endblock %}

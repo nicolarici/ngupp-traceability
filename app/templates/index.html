@@ -1,24 +1,27 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h2>{{ config.LABELS.movimentazioni }}</h2>
-    <table id="data" class="table table-striped">
-        <thead>
-          <tr>
-            <th></th>
-            <th>{{ config.LABELS.rg16 }}</th>
-            <th>{{ config.LABELS.rg20 }}</th>
-            <th>{{ config.LABELS.rg21 }}</th>
-            <th>{{ config.LABELS.codice_anno }}</th>
-            <th>{{ config.LABELS.utente_possesso }}</th>
-            <th>{{ config.LABELS.nome_ufficio }}</th>
-            <th>{{ config.LABELS.num }}</th>
-            <th>{{ config.LABELS.data }}</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
+  <h1>Tracciabilità fascicoli - Tribunale di Brescia</h1>
+  <br />
+  <h2>{{ config.LABELS.movimentazioni }}</h2>
+  <hr>
+  <table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th></th>
+          <th>{{ config.LABELS.rg16 }}</th>
+          <th>{{ config.LABELS.rg20 }}</th>
+          <th>{{ config.LABELS.rg21 }}</th>
+          <th>{{ config.LABELS.codice_anno }}</th>
+          <th>{{ config.LABELS.utente_possesso }}</th>
+          <th>{{ config.LABELS.nome_ufficio }}</th>
+          <th>{{ config.LABELS.num }}</th>
+          <th>{{ config.LABELS.data }}</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
 {% endblock %}
 {% block scripts %}
   <script>

@@ -20,20 +20,29 @@
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav navbar-left">
                     {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('fascicoli.generation') }}">{{ config.LABELS.genera }}</a></li>
+                    <li><a href="{{ url_for('fascicoli.generation') }}">{{ config.LABELS.nuovo_file }}</a></li>
                     {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
                         <li><a href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a></li>
                     {% else %}
-                        <li><a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a></li>
+                          
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                {{ current_user.nome }} {{ current_user.cognome }}
+                            <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a></li>
+                                <li><a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a></li>
+                            </ul>
+                        </li>
                         <li>
                             {% if current_user.email == config.ADMIN_MAIL %}
                                 <a href="{{ url_for('superuser.see_users') }}">{{ config.LABELS.visualizza_utenti }}</a>
                             {% endif %}
                         </li>
-                        <li><a href="{{ url_for('auth.logout') }}">{{ config.LABELS.logout }}</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -54,7 +63,7 @@
         {# application content needs to be provided in the app_content block #}
         {% block app_content %}{% endblock %}
     </div>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='style.css') }}">
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>

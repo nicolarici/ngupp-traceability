@@ -1,4 +1,5 @@
 from email.policy import default
+from ftplib import all_errors
 import os
 import qrcode
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
@@ -57,6 +58,12 @@ def generation():
     
     form = GenerationForm()
     if form.validate_on_submit():
+
+        files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
+
+        if len(files) > 0:
+            flash(current_app.config["LABELS"]["duplicate_error"])
+            return redirect(url_for('fascicoli.generation'))
         
         file = Files(rg21=form.rg21.data,
                      rg20=form.rg20.data,
@@ -78,7 +85,7 @@ def generation():
 @login_required
 def file_details(file_id):
     
-    history = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.created, History.id).order_by(History.created.desc()).all()
+    history = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.user_id, History.created, History.id).order_by(History.created.desc()).all()
     
     return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], hist=history, file=Files.query.get(file_id))
 
@@ -86,10 +93,13 @@ def file_details(file_id):
 @bp.route('/<file_id>/add', methods=('GET', 'POST'))
 @login_required
 def file_add(file_id):
-    
-    file = History(file_id=file_id, created=datetime.now(), user_id=current_user.id)
-    db.session.add(file)
-    db.session.commit()
+
+    last = History.query.filter_by(file_id=file_id).order_by(History.created.desc()).first()
+
+    if last is None or (last is not None and last.user_id != current_user.id):
+        new_hist = History(file_id=file_id, created=datetime.now(), user_id=current_user.id)
+        db.session.add(new_hist)
+        db.session.commit()
     
     return redirect(url_for('fascicoli.file_details', file_id=file_id))
 
@@ -105,20 +115,27 @@ def file_delete(file_id):
     file = Files.query.filter_by(id=file_id).first()
     db.session.delete(file)
     db.session.commit()
+
+    os.remove(f"app/static/img/{file_id}.png")
     
     return redirect(url_for('index'))
 
 
-@bp.route('/<hist_id>/delete', methods=('GET', 'POST'))
+@bp.route('/<hist_id>/hist_delete', methods=('GET', 'POST'))
 @login_required
 def record_delete(hist_id):
     
-    file = History.query.filter_by(hist_id=hist_id).first()
+    hist = History.query.filter_by(id=hist_id).first()
 
-    db.session.delete(file)
-    db.session.commit()
+    all_hist = History.query.filter_by(file_id=hist.file_id).all()
 
-    return redirect(url_for('fascicoli.file_details', file_id=file.id))
+    if len(all_hist) > 1:
+        db.session.delete(hist)
+        db.session.commit()
+    else:
+        flash("Non puoi eliminare l'unico record. Elimina l'intero fascicolo.")
+
+    return redirect(url_for('fascicoli.file_details', file_id=hist.file_id))
 
 
 @bp.route('/<file_id>/duplica', methods=('GET', 'POST'))
@@ -177,11 +194,17 @@ def file_modify(file_id):
                             default=file.anno,
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
-        submit = SubmitField(current_app.config["LABELS"]["duplica"])
+        submit = SubmitField(current_app.config["LABELS"]["modifica"])
     
     form = ModifyForm()
     if form.validate_on_submit():
 
+        if file.rg21 == form.rg21.data and file.rg20 == form.rg20.data and file.rg16 == form.rg16.data and file.anno == form.anno.data:
+            print("IN")
+            flash(current_app.config["LABELS"]["no_change"])
+            return redirect(url_for('fascicoli.file_details', file_id=file_id))
+
+        print("OUT")
         files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
 
         if len(files) > 0:
