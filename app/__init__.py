@@ -47,8 +47,7 @@ def create_app():
     @app.route('/api/data')
     @login_required
     def data():
-        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).order_by(History.id.desc()).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.id, Files.rg16, Files.rg20, Files.rg21, Files.anno, History.created)
-
+        query = db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, Files.id, Files.rg16, Files.rg20, Files.rg21, Files.anno, History.created)
         
         # search filter
         search = request.args.get('search[value]')
@@ -107,8 +106,6 @@ def create_app():
         for file in query:
             if file.id not in distinct_files:
                 distinct_files[file.id] = render_file(file)
-
-        print(len(distinct_files))
 
         # response
         return {

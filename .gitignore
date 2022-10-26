@@ -1,4 +1,4 @@
 __pycache__
 app/static/img/*
-migrations/*
+migrations
 app.db
