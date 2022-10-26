@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ title }}</h1>
+    <table id="data" class="table table-striped">
+        <thead>
+            <tr>
+            <th>{{config.LABELS.ufficio}}</th>
+            <th>{{config.LABELS.nome_ufficio}}</th>
+            <th>{{config.LABELS.numero_fascicoli}}</th>
+            <th>{{config.LABELS.tempo_medio}}</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+{% endblock %}
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      var table = $('#data').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
+        },
+        ajax: '{{ url_for("statistics.data") }}',
+        columns: [
+          {data: 'ufficio'},
+          {data: 'nome_ufficio'},
+          {data: 'numero_fascicoli'},
+          {data: 'media_tempo'}
+        ],
+      });  
+      $('#data_filter').css("float", 'right');
+  });
+  </script>
+{% endblock %}
+

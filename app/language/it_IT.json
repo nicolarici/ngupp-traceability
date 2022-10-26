@@ -65,7 +65,7 @@
     "ufficio": "Ufficio",
     "nome_ufficio_opzionale": "Nome ufficio (opzionale)",
     "nome_ufficio": "Nome ufficio",
-    "num": "N°",
+    "num": "Numero",
     "nome_ufficio_opz": "Nome ufficio (opzionale)",
     "utente_possesso": "Utente",
     "user_modified": "Informazioni aggiornate correttamente",
@@ -75,6 +75,10 @@
     "email_utente": "Email utente",
     "promote": "Promuovi a utente avanzato",
     "demote": "Rimuovi utente avanzato",
-    "privilegi": "Privilegi utente avanzato"
+    "privilegi": "Privilegi utente avanzato",
+    "nome_utente": "Nome utente",
+    "statistics": "Statistiche",
+    "numero_fascicoli": "Numero fascicoli",
+    "tempo_medio": "Tempo medio di gestione"
     
 }

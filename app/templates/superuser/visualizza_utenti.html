@@ -9,7 +9,6 @@
           <th>{{config.LABELS.ufficio}}</th>
           <th>{{config.LABELS.nome_ufficio}}</th>
           <th>{{config.LABELS.privilegi}}</th>
-
         </tr>
         {% for user in users %}
         <tr>
@@ -17,7 +16,6 @@
           <td>{{ user.email }}</td>
           <td>{{ user.ufficio }}</td>
           <td>{{ user.nome_ufficio }}</td>
-          <td>{{ user.superuser }}</td>
           <td>
             {% if  user.superuser == False %}
                 <a class="btn btn-success btn-md" href="{{ url_for('superuser.promote', user_id=user.id) }}">{{ config.LABELS.promote }}</a>
