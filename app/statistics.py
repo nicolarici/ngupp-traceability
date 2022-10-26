@@ -15,15 +15,15 @@ class Statistic():
     def numero_fascicoli_ufficio(ufficio):
         return db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).count()
     
-def media_tempo_per_ufficio(ufficio):
-    files=db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
-    tempo_totale=0
-    for i in range(len(files)-1):
-        tempo_totale=tempo_totale+(files[i+1][1].created-files[i][1].created).total_seconds()
-    if tempo_totale == 0 or len(files) == 0:
-        return "0"
-        
-    return GetTime(round(tempo_totale/len(files)))
+    def media_tempo_per_ufficio(self,ufficio):
+        files=db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
+        tempo_totale=0
+        for i in range(len(files)-1):
+            tempo_totale=tempo_totale+(files[i+1][1].created-files[i][1].created).total_seconds()
+        if tempo_totale == 0 or len(files) == 0:
+            return "0"
+            
+        return self.getTime(round(tempo_totale/len(files)))
 
     
     def getTime(time):
@@ -62,8 +62,7 @@ def data():
     statistics= []
     
     for ufficio in uffici:
-        if numero_fascicoli_ufficio(ufficio[0]) != 0:
-            statistics.append(Statistic(ufficio[0], ufficio[1]))
+        statistics.append(Statistic(ufficio[0], ufficio[1]))
                     
     def render_file(stat):
         return {
