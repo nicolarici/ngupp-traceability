@@ -1,48 +1,18 @@
-import datetime
+from email.policy import default
 import os
 import qrcode
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
 from flask_login import login_required,current_user
-from app.models import Files
+from app.models import Files, History
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 from app.models import User
 from app.extension import db
 from datetime import datetime
 
 
-bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
-
-
-@bp.route('/download/<code>', methods=['GET', 'POST'])
-def download(code):
-    uploads = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
-    return send_from_directory(uploads, f"{code}.png", as_attachment=True)
-
-
-@bp.route('/generation', methods=('GET', 'POST'))
-@login_required
-def generation():
-
-    class GenerationForm(FlaskForm):
-        codice = IntegerField(current_app.config["LABELS"]["codice"], 
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        anno= IntegerField(current_app.config["LABELS"]["codice_anno"], 
-                            default=datetime.datetime.now().year,
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-
-        submit = SubmitField(current_app.config["LABELS"]["genera"])
-    
-    form = GenerationForm()
-    if form.validate_on_submit():
-        
-        if db.session.query(Files.code).filter_by(code=str(form.codice.data)+"-"+str(form.anno.data)).scalar() is not None:
-            flash(current_app.config["LABELS"]["codice_esistente"])
-            return redirect(url_for('fascicoli.generation'))
-        
-
-        # Create QR code
+def generate_qr(file_id):
 
         qr = qrcode.QRCode(
             version=1,
@@ -50,64 +20,183 @@ def generation():
             box_size=10,
             border=4,
         )
-        code = str(form.codice.data) + "-" + str(form.anno.data)
-        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{code}/add")
+
+
+        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{file_id}/add")
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")
-        img.save(f"app/static/img/{code}.png")
+        img.save(f"app/static/img/{file_id}.png")
 
+        return
+    
+
+bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
+
+
+@bp.route('/<file_id>/download', methods=['GET', 'POST'])
+def download(file_id):
+    uploads = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
+    return send_from_directory(uploads, f"{file_id}.png", as_attachment=True)
+
+
+@bp.route('/generation', methods=('GET', 'POST'))
+@login_required
+def generation():
+
+    class GenerationForm(FlaskForm):
+        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()])
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()])
+        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+                            default=datetime.now().year,
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+
+        submit = SubmitField(current_app.config["LABELS"]["genera"])
+    
+    form = GenerationForm()
+    if form.validate_on_submit():
         
-        file = Files(code=str(form.codice.data)+"-"+str(form.anno.data), created=datetime.now(), user_id=current_user.id)
-        
+        file = Files(rg21=form.rg21.data,
+                     rg20=form.rg20.data,
+                     rg16=form.rg16.data,
+                     anno=form.anno.data)
+                     
         db.session.add(file)
         db.session.commit()
 
-        return redirect(url_for('fascicoli.file_details', code=str(form.codice.data)+"-"+str(form.anno.data)))
+        file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
+        generate_qr(file.id)
 
-    return render_template('qr_generation/generate_code.html', title=current_app.config["LABELS"]["generation_title"], form=form)
+        return redirect(url_for('fascicoli.file_add', file_id=file.id))
+
+    return render_template('fascicoli/generate_code.html', title=current_app.config["LABELS"]["generation_title"], form=form)
 
 
-@bp.route('/<code>', methods=('GET', 'POST'))
+@bp.route('/<file_id>', methods=('GET', 'POST'))
 @login_required
-def file_details(code):
+def file_details(file_id):
     
-    files = Files.query.filter_by(code=code).join(User, User.id == Files.user_id).add_columns(User.nome, User.cognome, User.ufficio,User.nome_ufficio ,User.id, Files.code, Files.created).order_by(Files.created.desc()).all()
+    history = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.created, History.id).order_by(History.created.desc()).all()
     
-    return render_template('qr_generation/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], files=files, code=code)
+    return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], hist=history, file=Files.query.get(file_id))
 
 
-@bp.route('/<code>/add', methods=('GET', 'POST'))
+@bp.route('/<file_id>/add', methods=('GET', 'POST'))
 @login_required
-def file_add(code):
+def file_add(file_id):
     
-    file = Files(code=code, created=datetime.now(), user_id=current_user.id)
-        
+    file = History(file_id=file_id, created=datetime.now(), user_id=current_user.id)
     db.session.add(file)
     db.session.commit()
     
-    
-    return redirect(url_for('fascicoli.file_details', code=code))
+    return redirect(url_for('fascicoli.file_details', file_id=file_id))
 
 
-@bp.route('/<code>/delete', methods=('GET', 'POST'))
+@bp.route('/<file_id>/delete', methods=('GET', 'POST'))
 @login_required
-def file_delete(code):
+def file_delete(file_id):
     
-    files = Files.query.filter_by(code=code).all()
-    for file in files:
-        db.session.delete(file)
+    hist = History.query.filter_by(file_id=file_id).all()
+    for h in hist:
+        db.session.delete(h)
+
+    file = Files.query.filter_by(id=file_id).first()
+    db.session.delete(file)
     db.session.commit()
     
     return redirect(url_for('index'))
 
-@bp.route('/<code><created>/delete', methods=('GET', 'POST'))
+
+@bp.route('/<hist_id>/delete', methods=('GET', 'POST'))
 @login_required
-def record_delete(code,created):
+def record_delete(hist_id):
     
-    files = Files.query.filter_by(code=code, created=created).all()
-    for file in files:
-        db.session.delete(file)
+    file = History.query.filter_by(hist_id=hist_id).first()
+
+    db.session.delete(file)
     db.session.commit()
+
+    return redirect(url_for('fascicoli.file_details', file_id=file.id))
+
+
+@bp.route('/<file_id>/duplica', methods=('GET', 'POST'))
+@login_required
+def file_duplicate(file_id):
+
+    file = Files.query.filter_by(id=file_id).first()
+
+    class DuplicateForm(FlaskForm):
+        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+                            default=file.rg21,
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()], default=file.rg20)
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()], default=file.rg16)
+        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+                            default=file.anno,
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+
+        submit = SubmitField(current_app.config["LABELS"]["duplica"])
     
-    return redirect(url_for('fascicoli.file_details', code=code))
+    form = DuplicateForm()
+    if form.validate_on_submit():
+      
+        files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
+
+        if len(files) > 0:
+            flash(current_app.config["LABELS"]["duplicate_error"])
+            return redirect(url_for('fascicoli.file_duplicate', file_id=file_id))
+
+        dup_file = Files(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data)
+        db.session.add(dup_file)
+        db.session.commit()
+
+        file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
+        generate_qr(dup_file.id)
+
+        return redirect(url_for('fascicoli.file_add', file_id=file.id))
+        
+
+    return render_template('fascicoli/modifica.html', title=current_app.config["LABELS"]["generation_title"], duplica=True, form=form)
+
+
+@bp.route('/<file_id>/modifica', methods=('GET', 'POST'))
+@login_required
+def file_modify(file_id):
+
+    file = Files.query.filter_by(id=file_id).first()
+
+    class ModifyForm(FlaskForm):
+        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+                            default=file.rg21,
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()], default=file.rg20)
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()], default=file.rg16)
+        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+                            default=file.anno,
+                            validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+
+        submit = SubmitField(current_app.config["LABELS"]["duplica"])
+    
+    form = ModifyForm()
+    if form.validate_on_submit():
+
+        files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
+
+        if len(files) > 0:
+            flash(current_app.config["LABELS"]["duplicate_error"])
+            return redirect(url_for('fascicoli.file_modify', file_id=file_id))
+
+        file.rg21 = form.rg21.data
+        file.rg20 = form.rg20.data
+        file.rg16 = form.rg16.data
+        file.anno = form.anno.data
+
+        db.session.add(file)
+        db.session.commit()
+
+        return redirect(url_for('fascicoli.file_details', file_id=file.id))
+        
+
+    return render_template('fascicoli/modifica.html', title=current_app.config["LABELS"]["generation_title"], duplica=False, form=form)
