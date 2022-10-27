@@ -5,6 +5,7 @@
     <table id="data" class="table table-striped">
         <thead>
             <tr>
+            <th>{{config.LABELS.nome_utente}}</th>
             <th>{{config.LABELS.ufficio}}</th>
             <th>{{config.LABELS.nome_ufficio}}</th>
             <th>{{config.LABELS.numero_fascicoli}}</th>
@@ -24,7 +25,8 @@
         },
         ajax: '{{ url_for("statistics.data") }}',
         columns: [
-          {data: 'ufficio'},
+          {data: 'nome_utente'},
+          {data: 'numero_ufficio'},
           {data: 'nome_ufficio'},
           {data: 'numero_fascicoli'},
           {data: 'media_tempo'}
