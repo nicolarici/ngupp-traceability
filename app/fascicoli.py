@@ -1,5 +1,3 @@
-from email.policy import default
-from ftplib import all_errors
 import os
 import qrcode
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory

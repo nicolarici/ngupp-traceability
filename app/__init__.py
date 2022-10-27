@@ -2,7 +2,9 @@ from flask import Flask, render_template, request
 from app.models import Files, History, User
 from config import Config
 from flask_login import login_required
+from flask_bootstrap import WebCDN
 import os
+
 
 """
     Create and configure the app.
@@ -36,6 +38,9 @@ def create_app():
 
     from app.extension import bootstrap
     bootstrap.init_app(app)
+    app.extensions['bootstrap']['cdns']['jquery'] = WebCDN("//cdnjs.cloudflare.com/ajax/libs/jquery/" + app.config["JQUERY_VERSION" ] + "/")
+    app.extensions['bootstrap']['cdns']['bootstrap'] = WebCDN("//cdn.jsdelivr.net/npm/bootstrap@" + app.config["BOOTSTRAP_VERSION" ] + "/dist/")
+    app.extensions['bootstrap']['cdns']['popper'] = WebCDN("//cdn.jsdelivr.net/npm/@popperjs/core@" + app.config["POPPER_VERSION" ] + "/dist/")
 
 
     @app.route('/')

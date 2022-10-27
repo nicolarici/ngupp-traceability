@@ -9,6 +9,13 @@ class Config(object):
     LANGUAGE = 'it_IT'
     BASE_URL = "http://127.0.0.1:5000/"
 
+    BOOTSTRAP_USE_MINIFIED = True
+    BOOTSTRAP_CDN_FORCE_SSL = True
+
+    BOOTSTRAP_VERSION = "5.2.2"
+    JQUERY_VERSION = "2.1.1"
+    POPPER_VERSION = "2.9.2"
+
     with open("app/language/" + LANGUAGE + ".json", "r") as f:
         LABELS = json.load(f)
 
