@@ -5,28 +5,34 @@ from app.extension import db
 
 
 class Statistic():
-    def __init__(self, ufficio, nome_ufficio):
-        self.ufficio = ufficio
-        self.nome_ufficio = nome_ufficio
-        self.numero_fascicoli = self.numero_fascicoli_ufficio(ufficio)
-        self.media_tempo = self.media_tempo_per_ufficio(ufficio)
-
-    @staticmethod
-    def numero_fascicoli_ufficio(ufficio):
-        return db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).count()
+    def __init__(self, user):
+        
+        self.user = user
+        num_fas = db.session.query(History).filter(user.id == History.user_id).count()
+        self.numero_fascicoli = num_fas
+        
+        if num_fas > 0:
+            self.media_tempo = self.media_tempo_per_ufficio(user, num_fas)
+        else:
+            self.media_tempo = 0
     
-    def media_tempo_per_ufficio(self,ufficio):
-        files=db.session.query(User, History, Files).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
-        tempo_totale=0
-        for i in range(len(files)-1):
-            tempo_totale=tempo_totale+(files[i+1][1].created-files[i][1].created).total_seconds()
-        if tempo_totale == 0 or len(files) == 0:
-            return "0"
+    def media_tempo_per_ufficio(self, user, num_fas):
             
-        return self.getTime(round(tempo_totale/len(files)))
+        #files_hist=db.session.query(History).filter(User.id == History.user_id).filter(History.file_id == Files.id).filter(User.ufficio==ufficio).order_by(History.created.asc()).all()
+        
+        files_hist=db.session.query(History).order_by(History.file_id, History.created).all()
+        
+        tempo_totale=0
+        for i in range(len(files_hist)-1):
+            if files_hist[i].file_id == files_hist[i+1].file_id:
+                if files_hist[i].user_id == user.id:
+                    tempo_totale=tempo_totale+(files_hist[i+1].created-files_hist[i].created).total_seconds()
+        time=round(tempo_totale/num_fas)   
+        print(time)
+        return self.getTime(time)
 
     
-    def getTime(time):
+    def getTime(self, time):
         day = time // (24 * 3600)
         time = time % (24 * 3600)
         hour = time // 3600
@@ -49,6 +55,7 @@ bp = Blueprint('statistics', __name__, url_prefix='/statistics')
 @bp.route('/view', methods=('GET', 'POST'))
 @login_required
 def view():
+        
     return render_template('statistics/statistics.html', title=current_app.config["LABELS"]["statistics"])
 
 
@@ -56,18 +63,21 @@ def view():
 @login_required
 def data():
     users=User.query.filter(User.email!=current_app.config["ADMIN_MAIL"]).all()
-    uffici=[]
-    for user in users:
-        uffici.append([user.ufficio, user.nome_ufficio])
-    statistics= []
     
-    for ufficio in uffici:
-        statistics.append(Statistic(ufficio[0], ufficio[1]))
+    statistics = []
+    
+    for user in users:
+        print(user.nome)
+        statistic = Statistic(user)
+        print(statistic.numero_fascicoli)
+        if statistic.numero_fascicoli > 0:
+            statistics.append(statistic)
                     
     def render_file(stat):
         return {
-            'ufficio': stat.ufficio,
-            'nome_ufficio': stat.nome_ufficio,
+            'nome_utente': stat.user.nome+" "+stat.user.cognome,
+            'numero_ufficio': stat.user.ufficio,
+            'nome_ufficio': stat.user.nome_ufficio,
             'numero_fascicoli': stat.numero_fascicoli,
             'media_tempo': stat.media_tempo
         }
