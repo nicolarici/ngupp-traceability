@@ -65,25 +65,44 @@
 
     <br /><hr>
     <h3>{{ config.LABELS.storico_fascicolo }}</h3>
-    <table id="data" class="table table-striped">
-        <tr>
-          <th>{{ config.LABELS.utente_possesso }}</th>
-          <th>{{ config.LABELS.nome_ufficio }}</th>
-          <th>{{ config.LABELS.num }}</th>
-          <th>{{ config.LABELS.data }}</th>
-          <th>{{ config.LABELS.azione }}</th>
-        </tr>
-        {% for h in hist %}
-        <tr>
-          <td>{{ h.nome + " " + h.cognome }}</td>
-          <td>{{ h.nome_ufficio }}</td>
-          <td>{{ h.ufficio }}</td>
-          <td>{{ h.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
-          <td>{% if h.user_id == current_user.id %}
-            <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=h.id) }}">{{ config.LABELS.elimina }}</a>
-          {% endif %}</td>
-        </tr> 
-        {% endfor %}
-    </table>
+    <div class="container">
+      <div class="row">
+        <div class="table-responsive col-md-12">
+          <table id="data" class="table table-striped table-hover dt-responsive">
+          <thead>
+              <tr>
+              <th>{{config.LABELS.utente_possesso}}</th>
+              <th>{{config.LABELS.nome_ufficio}}</th>
+              <th>{{config.LABELS.num}}</th>
+              <th>{{config.LABELS.data}}</th>
+              <th>{{config.LABELS.azione}}</th>
+              </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+{% endblock %}
 
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
+        },
+        ajax: '{{ url_for("fascicoli.data", file_id=file.id) }}',
+        columns: [
+          {data: 'user_name', orderable: false},
+          {data: 'office_name', orderable: false},
+          {data: 'office_number', orderable: false},
+          {data: 'created'},
+          {data: 'btn', orderable: false, searchable: false, className: 'dt-body-center'}
+        ],
+      });
+  });
+  
+  </script>
 {% endblock %}

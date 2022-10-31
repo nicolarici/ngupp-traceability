@@ -37,7 +37,7 @@
         language: {
             url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
         },
-        ajax: '/api/data',
+        ajax: '{{ url_for("data") }}',
         columns: [
           {data: 'file_id', visible: false, searchable: false},
           {data: 'RG16'},
