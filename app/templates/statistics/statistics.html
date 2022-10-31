@@ -25,18 +25,43 @@
         },
         ajax: '{{ url_for("statistics.data") }}',
         columns: [
-          {data: 'nome_utente'},
-          {data: 'numero_ufficio'},
-          {data: 'nome_ufficio'},
-          {data: 'numero_fascicoli'},
-          {data: 'media_tempo'}
+          {"data": 'nome_utente'},
+          {"data": 'numero_ufficio'},
+          {"data": 'nome_ufficio'},
+          {"data": 'numero_fascicoli'},
+          {"data": 'media_tempo',
+            "render": function (data, type, row) {
+              return toDDHHMMSS(data);
+            }
+            }
         ],
       });  
       
       $('#data_filter').css("float", 'right');
 
   });
+  function toDDHHMMSS(seconds) {
+    var sec_num = parseInt(seconds, 10); // don't forget the second param
+    var days    = Math.floor(sec_num / 86400);
+    var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
+    var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
+    var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
 
-  </script>
+    if (days    < 10) {days    = "0"+days;}
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    if (days > 0) {
+      return days+'g '+hours+'o '+minutes+'m '+seconds+'s';
+    } else if (hours > 0) {
+      return hours+'o '+minutes+'m '+seconds+'s';
+    } else if (minutes > 0) {
+      return minutes+'m '+seconds+'s';
+    } else {
+      return seconds+'s';
+    }
+  }
+  </script>    
+    
 {% endblock %}
 

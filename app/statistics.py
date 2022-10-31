@@ -27,12 +27,12 @@ class Statistic():
             if files_hist[i].file_id == files_hist[i+1].file_id:
                 if files_hist[i].user_id == user.id:
                     tempo_totale=tempo_totale+(files_hist[i+1].created-files_hist[i].created).total_seconds()
-        time=round(tempo_totale/num_fas)   
-        print(time)
-        return self.getTime(time)
-
+        #time=round(tempo_totale/num_fas)   
+        #print(time)
+        #return self.getTime(time)
+        return round(tempo_totale/num_fas)
     
-    def getTime(self, time):
+    """ def getTime(self, time):
         day = time // (24 * 3600)
         time = time % (24 * 3600)
         hour = time // 3600
@@ -47,7 +47,7 @@ class Statistic():
         elif day == 0:
             return "%d o %d m" % (hour, minutes)
         else:
-            return "%d g, %d o, %d m" % (day, hour, minutes)
+            return "%d g, %d o, %d m" % (day, hour, minutes) """
 
 
 bp = Blueprint('statistics', __name__, url_prefix='/statistics')
@@ -70,7 +70,7 @@ def data():
         print(user.nome)
         statistic = Statistic(user)
         print(statistic.numero_fascicoli)
-        if statistic.numero_fascicoli > 0:
+        if statistic.numero_fascicoli > 0 and statistic.media_tempo > 0:
             statistics.append(statistic)
                     
     def render_file(stat):
