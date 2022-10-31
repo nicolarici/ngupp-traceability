@@ -3,19 +3,34 @@
 
 
 {% block app_content %}
-    <h1>{{ config.LABELS.login }}</h1>
     <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form) }}
+        <div class="col-md-4 offset-md-4">
+            <h1>{{ config.LABELS.login }}</h1>
+            <br />
+            <form class="form form" method="post" role="form" novalidate>
+                {{ form.hidden_tag() }}
+                {{ wtf.form_errors(form, hiddens="only") }}
+              
+                {{ wtf.form_field(form.email) }}
+                {{ wtf.form_field(form.password) }}
+                {{ wtf.form_field(form.remember_me) }}
+
+                <div class="d-grid gap-2" style="margin-top: 1em;">
+                    {{ wtf.form_field(form.submit, button_map=btn_map) }}
+                </div>
+              </form>
         </div>
     </div>
-    <p>
-        {{ config.LABELS.new_user }} 
-        <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
-    </p>
-    <p>
-        {{config.LABELS.forgot_password}}
-        <a href="{{ url_for('auth.reset_password_request') }}">{{config.LABELS.reset_password_click}}</a>
-    </p>
+    <br />
+    <div class="row">
+        <div class="col-md-4 offset-md-4">
+            <p>{{ config.LABELS.new_user }}
+                <a href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
+                <br />
+                {{config.LABELS.forgot_password}}
+                <a href="{{ url_for('auth.reset_password_request') }}">{{config.LABELS.reset_password_click}}</a>
+            </p>
+        </div>
+    </div>
 {% endblock %}
 

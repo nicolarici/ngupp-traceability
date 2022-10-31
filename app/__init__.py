@@ -104,7 +104,9 @@ def create_app():
                 'user_name': file.nome + ' ' + file.cognome,
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
-                'created': file.created.strftime(' %H:%M - %d/%m/%Y ')
+                'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
+                'btn': '<a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button" style="width: 5em;">Apri</a>'
+
             }
     
         distinct_files = {}

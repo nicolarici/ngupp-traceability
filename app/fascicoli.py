@@ -1,11 +1,12 @@
 import os
 import qrcode
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
-from flask_login import login_required,current_user
+from flask_login import login_required, current_user
 from app.models import Files, History
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, IntegerField
-from wtforms.validators import DataRequired, Optional
+from wtforms.widgets import NumberInput
+from wtforms.validators import DataRequired, Optional, NumberRange
 from app.models import User
 from app.extension import db
 from datetime import datetime
@@ -45,14 +46,20 @@ def generation():
 
     class GenerationForm(FlaskForm):
         rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+                            widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()])
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()])
-        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional(), NumberRange(min=0)])
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional()])
+        anno = IntegerField(current_app.config["LABELS"]["anno"], 
+                            widget=NumberInput(min=1, step=1), 
                             default=datetime.now().year,
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
-        submit = SubmitField(current_app.config["LABELS"]["genera"])
+        submit = SubmitField(current_app.config["LABELS"]["crea"])
     
     form = GenerationForm()
     if form.validate_on_submit():
@@ -76,7 +83,8 @@ def generation():
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
 
-    return render_template('fascicoli/generate_code.html', title=current_app.config["LABELS"]["generation_title"], form=form)
+    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"],
+                            crea=True, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
 @bp.route('/<file_id>', methods=('GET', 'POST'))
@@ -145,11 +153,19 @@ def file_duplicate(file_id):
     class DuplicateForm(FlaskForm):
         rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
                             default=file.rg21,
+                            widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()], default=file.rg20)
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()], default=file.rg16)
-        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+                            default=file.rg20,
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional(), NumberRange(min=0)])
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+                            default=file.rg16,
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional()])
+        anno = IntegerField(current_app.config["LABELS"]["anno"], 
                             default=file.anno,
+                            widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
         submit = SubmitField(current_app.config["LABELS"]["duplica"])
@@ -173,7 +189,8 @@ def file_duplicate(file_id):
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
         
 
-    return render_template('fascicoli/modifica.html', title=current_app.config["LABELS"]["generation_title"], duplica=True, form=form)
+    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+                            crea=False, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
 @bp.route('/<file_id>/modifica', methods=('GET', 'POST'))
@@ -185,11 +202,19 @@ def file_modify(file_id):
     class ModifyForm(FlaskForm):
         rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
                             default=file.rg21,
+                            widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], validators=[Optional()], default=file.rg20)
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], validators=[Optional()], default=file.rg16)
-        anno = IntegerField(current_app.config["LABELS"]["codice_anno"], 
+        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+                            default=file.rg20,
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional(), NumberRange(min=0)])
+        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+                            default=file.rg16,
+                            widget=NumberInput(min=1, step=1), 
+                            validators=[Optional()])
+        anno = IntegerField(current_app.config["LABELS"]["anno"], 
                             default=file.anno,
+                            widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
         submit = SubmitField(current_app.config["LABELS"]["modifica"])
@@ -220,4 +245,5 @@ def file_modify(file_id):
         return redirect(url_for('fascicoli.file_details', file_id=file.id))
         
 
-    return render_template('fascicoli/modifica.html', title=current_app.config["LABELS"]["generation_title"], duplica=False, form=form)
+    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+                            crea=False, modifica=True, form=form, btn_map={"submit": "primary"})

@@ -96,7 +96,7 @@ def register():
 
     return render_template('auth/register.html', 
                            title=current_app.config["LABELS"]["registration_title"], 
-                           form=form)
+                           form=form, btn_map={"submit": "primary"})
 
 @bp.route('/confirm_registration/<token>', methods=['GET', 'POST'])
 def confirm_registration(token):
@@ -186,7 +186,9 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
 
-    return render_template('auth/login.html', title=current_app.config["LABELS"]["login_title"], form=form)
+    return render_template('auth/login.html', 
+                           title=current_app.config["LABELS"]["login_title"], 
+                           form=form, btn_map={"submit": "primary"})
 
 
 @bp.route('/logout')

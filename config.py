@@ -16,7 +16,7 @@ class Config(object):
     JQUERY_VERSION = "2.1.1"
     POPPER_VERSION = "2.9.2"
 
-    with open("app/language/" + LANGUAGE + ".json", "r") as f:
+    with open("app/static/language/" + LANGUAGE + ".json", "r") as f:
         LABELS = json.load(f)
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')

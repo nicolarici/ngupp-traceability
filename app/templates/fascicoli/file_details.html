@@ -1,82 +1,67 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>{{ config.LABELS.dettaglio_fascicolo }}</h1>
-    <br />
-    <div class="container">
-      <div class="row">
-        <div class="col-md-1">
-          <h5><b>{{ config.LABELS.rg21 }}</b></h5>
-        </div>
-        <div class="col-md-1 offset-md-1">
-          {% if file.rg21 %}
-          <h5>{{ file.rg21 }}</h5>
-          {% else %}
-          <h5></h5>
-          {% endif %}        
-        </div>
-      </div>
-    </div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-1">
-          <h5><b>{{ config.LABELS.rg20 }}</b></h5>
-        </div>
-        <div class="col-md-1">
-          {% if file.rg20 %}
-          <h5>{{ file.rg20 }}</h5>
-          {% else %}
-          <h5></h5>
-          {% endif %}        </div>
-      </div>
-    </div>
+    <section class="jumbotron text-center">
+      <div class="container">
+        <h1>{{ config.LABELS.dettaglio_fascicolo }}</h1>
+        
+        <br />
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-1">
-          <h5><b>{{ config.LABELS.rg16 }}</b></h5>
+        <div class="row">
+          <div class="col-sm-1 offset-sm-5">
+            <strong>{{ config.LABELS.rg21 }}</strong>:
+          </div>
+          <div class="col-sm-1 offset-sm-1 offset-md-0">
+            {{ file.rg21 }}
+          </div>
         </div>
-        <div class="col-md-1 offset-md-1">
-          {% if file.rg16 %}
-          <h5>{{ file.rg16 }}</h5>
-          {% else %}
-          <h5></h5>
-          {% endif %}
+
+        <div class="row">
+          <div class="col-sm-1 offset-sm-5">
+            <strong>{{ config.LABELS.rg20 }}</strong>:
+          </div>
+          <div class="col-sm-1 offset-sm-1 offset-md-0">
+            {% if file.rg20 %}
+            {{ file.rg21 }}
+            {% else %}
+            
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-1 offset-sm-5">
+            <strong>{{ config.LABELS.rg16 }}</strong>:
+          </div>
+          <div class="col-sm-1 offset-sm-1 offset-md-0">
+            {% if file.rg16 %}
+            {{ file.rg16 }}
+            {% else %}
+            
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-1 offset-sm-5">
+            <strong>{{ config.LABELS.anno }}</strong>:
+          </div>
+          <div class="col-sm-1 offset-sm-1 offset-md-0">
+            {{ file.anno }}
+          </div>
+        </div>
+  
+        <br />
+
+        <div class="btn-group flex-wrap" role="group" aria-label="Actions">
+          <a class="btn btn-primary btn-md btn-block" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a>
+          <a class="btn btn-info btn-md btn-block" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a>
+          <a class="btn btn-success btn-md btn-block" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a>          
+          <a class="btn btn-danger btn-md btn-block" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina }}</a>
         </div>
       </div>
-    </div>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-1">
-          <h5><b>{{ config.LABELS.codice_anno }}</b></h5>
-        </div>
-        <div class="col-md-1 offset-md-1">
-          <h5>{{ file.anno }}</h5>
-        </div>
-      </div>
-    </div>
-
-    <br /><hr>
-    <h3>{{ config.LABELS.azioni }}</h3>
-
-    <div class="row">
-      <div class="col-md-2">
-        <a class="btn btn-primary btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a>
-      </div>
-      <div class="col-md-2 offset-md-1">
-        <a class="btn btn-info btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a>
-      </div>
-      <div class="col-md-2 offset-md-1">
-        <a class="btn btn-success btn-md btn-block" style="margin-right: 20px;" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a>
-      </div>
-      <div class="col-md-2 offset-md-1">
-        <a class="btn btn-danger btn-md btn-block" id="btn" style="margin-right: 20px;">{{ config.LABELS.elimina_fascicolo }}</a>
-      </div>
-    </div>  
-
-    <meta id="file_id" data-file="{{ file.id }}">
+    </section>
 
     <br /><hr>
     <h3>{{ config.LABELS.storico_fascicolo }}</h3>
@@ -95,20 +80,10 @@
           <td>{{ h.ufficio }}</td>
           <td>{{ h.created.strftime(' %d/%m/%Y %H:%M ') }}</td>
           <td>{% if h.user_id == current_user.id %}
-            <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=h.id) }}">{{ config.LABELS.elimina_record }}</a>
+            <a class="btn btn-danger btn-md" href="{{ url_for('fascicoli.record_delete', hist_id=h.id) }}">{{ config.LABELS.elimina }}</a>
           {% endif %}</td>
         </tr> 
         {% endfor %}
     </table>
 
-{% endblock %}
-{% block scripts %}
-    <script>
-      var file_id = $('#file_id').data("file");
-      $('#btn').click(function () { 
-          if (confirm("Vuoi confermare?")) {
-              location.href = "/fascicoli/" + file_id + "/delete" ;
-          }
-      });
-        </script>
 {% endblock %}

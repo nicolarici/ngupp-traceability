@@ -5,28 +5,35 @@
   <br />
   <h3>{{ config.LABELS.movimentazioni }}</h3>
   <hr>
-  <table id="data" class="table table-striped">
-      <thead>
-        <tr>
-          <th></th>
-          <th>{{ config.LABELS.rg16 }}</th>
-          <th>{{ config.LABELS.rg20 }}</th>
-          <th>{{ config.LABELS.rg21 }}</th>
-          <th>{{ config.LABELS.codice_anno }}</th>
-          <th>{{ config.LABELS.utente_possesso }}</th>
-          <th>{{ config.LABELS.nome_ufficio }}</th>
-          <th>{{ config.LABELS.num }}</th>
-          <th>{{ config.LABELS.data }}</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <div class="container">
+    <div class="row">
+      <div class="table-responsive col-md-12">
+        <table id="data" class="table table-striped table-hover dt-responsive">
+          <thead>
+            <tr>
+              <th></th>
+              <th>{{ config.LABELS.rg16 }}</th>
+              <th>{{ config.LABELS.rg20 }}</th>
+              <th>{{ config.LABELS.rg21 }}</th>
+              <th>{{ config.LABELS.anno }}</th>
+              <th>{{ config.LABELS.utente_possesso }}</th>
+              <th>{{ config.LABELS.nome_ufficio }}</th>
+              <th>{{ config.LABELS.num }}</th>
+              <th>{{ config.LABELS.data }}</th>
+              <th>{{ config.LABELS.azione }}</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 {% block scripts %}
   <script>
     $(document).ready(function () {
-      var table = $('#data').DataTable({
+      $('#data').DataTable({
         language: {
             url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
         },
@@ -37,16 +44,12 @@
           {data: 'RG20'},
           {data: 'RG21'},
           {data: 'anno'},
-          {data: 'user_name'},
-          {data: 'office_name'},
-          {data: 'office_number'},
+          {data: 'user_name', orderable: false},
+          {data: 'office_name', orderable: false},
+          {data: 'office_number', orderable: false},
           {data: 'created'},
+          {data: 'btn', orderable: false, searchable: false, className: 'dt-body-center'}
         ],
-      });
-
-      table.on('click', 'tr', function () {
-        var data = table.row(this).data();
-        location.href = "/fascicoli/" + data.file_id;
       });
   });
   
