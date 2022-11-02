@@ -36,6 +36,10 @@ def user(id):
     form = ModifyUserForm()
     if form.validate_on_submit():
 
+        if user.nome == form.nome.data and user.cognome == form.cognome.data and user.nome_ufficio == form.nome_ufficio.data and user.ufficio == form.ufficio.data:
+            flash(current_app.config["LABELS"]["no_change"])
+            return redirect(url_for('index'))
+
         user.nome = form.nome.data
         user.cognome = form.cognome.data
         user.ufficio = form.ufficio.data
@@ -45,6 +49,42 @@ def user(id):
 
         flash(current_app.config["LABELS"]["user_modified"], "success")
 
-        return redirect(url_for('user.user', id=user.id))
+        return redirect(url_for('index', id=user.id))
 
-    return render_template('user/user.html', form=form)
+    return render_template('user/profilo.html', form=form, btn_map={"submit": "primary"})
+
+
+@bp.route('/utenti', methods=('GET', 'POST'))
+@login_required
+def see_users():
+    users = User.query.filter(User.email != current_app.config["ADMIN_MAIL"]).all()
+    
+    return render_template('user/visualizza_utenti.html', users=users)
+
+
+@bp.route('/promote/<user_id>', methods=('GET', 'POST'))
+@login_required
+def promote(user_id):
+    
+    user = User.query.filter_by(id=user_id).first()
+    user.superuser = True
+    
+    db.session.add(user)
+    db.session.commit()
+    
+    users = User.query.filter(User.email != current_app.config["ADMIN_MAIL"]).all()
+
+    return render_template('user/visualizza_utenti.html', title=current_app.config["LABELS"]["lista_utenti"], users=users)
+
+
+@bp.route('/demote/<user_id>', methods=('GET', 'POST'))
+@login_required
+def demote(user_id):
+    user = User.query.filter_by(id=user_id).first()
+    user.superuser = False
+    
+    db.session.commit()
+    
+    users=User.query.filter(User.email!=current_app.config["ADMIN_MAIL"]).all()
+
+    return render_template('user/visualizza_utenti.html', title=current_app.config["LABELS"]["lista_utenti"], users=users)

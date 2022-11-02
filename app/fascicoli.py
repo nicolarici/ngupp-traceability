@@ -1,6 +1,6 @@
 import os
 import qrcode
-from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory
+from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory, request
 from flask_login import login_required, current_user
 from app.models import Files, History
 from flask_wtf import FlaskForm
@@ -87,13 +87,70 @@ def generation():
                             crea=True, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
+@bp.route('/api/data/<file_id>')
+@login_required
+def data(file_id):
+    query = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.user_id, History.created, History.id).order_by(History.created.desc())
+    
+    # search filter
+    search = request.args.get('search[value]')
+    if search:
+        query = query.filter(db.or_(
+            User.nome.like(f'%{search}%'),
+            User.cognome.like(f'%{search}%'),
+            User.nome_ufficio.like(f'%{search}%'),
+            User.ufficio.like(f'%{search}%'),
+            History.created.like(f'%{search}%')
+        ))
+    total_filtered = query.count()
+
+    # sorting
+    order = []
+    i = 0
+    while True:
+        col_index = request.args.get(f'order[{i}][column]')
+        if col_index is None:
+            break
+        col_code = request.args.get(f'columns[{col_index}][data]')
+        if col_code not in "code":
+            col_code = 'code'
+        descending = request.args.get(f'order[{i}][dir]') == 'desc'
+        col = getattr(Files, col_code)
+        if descending:
+            col = col.desc()
+        order.append(col)
+        i += 1
+    if order:
+        query = query.order_by(*order)
+
+    # pagination
+    start = request.args.get('start', type=int)
+    length = request.args.get('length', type=int)
+    query = query.offset(start).limit(length)
+
+
+    def render_file(hist):
+        return {
+            'user_name': hist.nome + ' ' + hist.cognome,
+            'office_name': hist.nome_ufficio,
+            'office_number': hist.ufficio,
+            'created': hist.created.strftime(' %H:%M - %d/%m/%Y '),
+            'btn': '<a class="btn btn-sm btn-danger" href="fascicoli/' + str(hist.id) + '/hist_delete" role="button" style="width: 5em;">Elimina</a>'
+        }
+
+    # response
+    return {
+        'data': [render_file(file) for file in query],
+        'recordsFiltered': total_filtered,
+        'recordsTotal': Files.query.count(),
+        'draw': request.args.get('draw', type=int),
+    }
+
+
 @bp.route('/<file_id>', methods=('GET', 'POST'))
 @login_required
-def file_details(file_id):
-    
-    history = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.user_id, History.created, History.id).order_by(History.created.desc()).all()
-    
-    return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], hist=history, file=Files.query.get(file_id))
+def file_details(file_id):    
+    return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], file=Files.query.get(file_id))
 
 
 @bp.route('/<file_id>/add', methods=('GET', 'POST'))
@@ -223,11 +280,9 @@ def file_modify(file_id):
     if form.validate_on_submit():
 
         if file.rg21 == form.rg21.data and file.rg20 == form.rg20.data and file.rg16 == form.rg16.data and file.anno == form.anno.data:
-            print("IN")
             flash(current_app.config["LABELS"]["no_change"])
             return redirect(url_for('fascicoli.file_details', file_id=file_id))
 
-        print("OUT")
         files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
 
         if len(files) > 0:

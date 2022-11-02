@@ -42,7 +42,7 @@
 
                 {% if current_user.email == config.ADMIN_MAIL %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('superuser.see_users') }}">{{ config.LABELS.visualizza_utenti }}</a>
+                        <a class="nav-link" href="{{ url_for('user.see_users') }}">{{ config.LABELS.visualizza_utenti }}</a>
                     </li>
                 {% endif %}
             {% endif %}

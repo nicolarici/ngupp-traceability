@@ -68,9 +68,10 @@ def register():
         except:
             cognome = ""
             
-        superuser=False
         if form.email.data == current_app.config["ADMIN_MAIL"]:
             superuser = True
+        else:
+            superuser = False
         
 
         user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data, nome_ufficio=form.nome_ufficio.data, superuser=superuser)
