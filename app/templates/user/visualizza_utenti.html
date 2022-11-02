@@ -24,5 +24,22 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+  $(document).ready(function () {
+    $('#data').DataTable({
+      language: {
+          url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
+      },
+      ajax: '{{ url_for("user.data") }}',
+      columns: [
+        {data: 'nome_utente'},
+        {data: 'email_utente'},
+        {data: 'ufficio'},
+        {data: 'nome_ufficio'},
+        {data: 'privilegi', orderable: false},
+      ],
+    });
+});
 
+</script>
 {% endblock %}
