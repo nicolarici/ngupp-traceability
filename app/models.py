@@ -74,6 +74,7 @@ class Files(db.Model):  # type: ignore
     rg20 = db.Column(db.Integer, index=True)
     rg16 = db.Column(db.Integer, index=True)
     anno = db.Column(db.Integer, index=True)
+    parent = db.Column(db.Integer, default=-1, index=True)
 
     def __repr__(self):
         return f"<File {self.id}>"

@@ -21,12 +21,11 @@ def generate_qr(file_id):
             border=4,
         )
 
-
         qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{file_id}/add")
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")
-        img.save(f"app/static/img/{file_id}.png")
+        img.save(f"app/static/img/qr_{file_id}.png")
 
         return
     
@@ -236,12 +235,20 @@ def file_duplicate(file_id):
             flash(current_app.config["LABELS"]["duplicate_error"])
             return redirect(url_for('fascicoli.file_duplicate', file_id=file_id))
 
-        dup_file = Files(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data)
+        dup_file = Files(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data, parent=file_id)
         db.session.add(dup_file)
         db.session.commit()
 
         file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
         generate_qr(dup_file.id)
+
+        # Add new History
+
+        hist = History.query.filter_by(file_id=file_id).all()
+        for h in hist:
+            new_hist = History(file_id=file.id, created=h.created, user_id=h.user_id)
+            db.session.add(new_hist)
+        db.session.commit()
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
         

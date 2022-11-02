@@ -99,6 +99,7 @@ def register():
                            title=current_app.config["LABELS"]["registration_title"], 
                            form=form, btn_map={"submit": "primary"})
 
+
 @bp.route('/confirm_registration/<token>', methods=['GET', 'POST'])
 def confirm_registration(token):
 
@@ -112,7 +113,6 @@ def confirm_registration(token):
 
     flash(current_app.config["LABELS"]["registration_confirmed"])
     return redirect(url_for('auth.logout'))
-
 
 
 @bp.route("/re_confirm_registration", methods=['GET', 'POST'])
@@ -146,8 +146,8 @@ def re_confirm_registration():
         return redirect(url_for('auth.logout'))
 
     return render_template('auth/reconfirm_registration.html', 
-                           title=current_app.config["LABELS"]["password_reset"], 
-                           form=form)
+                           form=form,
+                           btn_map={"submit": "primary"})
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -231,8 +231,7 @@ def reset_password_request():
         return redirect(url_for('auth.login'))
 
     return render_template('auth/password_reset_request.html', 
-                           title=current_app.config["LABELS"]["password_reset"], 
-                           form=form)
+                           form=form, btn_map={"submit": "primary"})
 
 
 @bp.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -261,4 +260,4 @@ def reset_password(token):
         flash(current_app.config["LABELS"]["password_reset_success"])
         return redirect(url_for('auth.login'))
 
-    return render_template('auth/reset_password.html', form=form)
+    return render_template('auth/reset_password.html', form=form, btn_map={"submit": "primary"})
