@@ -91,7 +91,7 @@ def register():
                        text_body=render_template('email/confirm_registration.txt',  user=user, token=token),
                        html_body=render_template('email/confirm_registration.html', user=user, token=token))
 
-        flash(current_app.config["LABELS"]["registration_email_sent"])
+        flash(current_app.config["LABELS"]["registration_email_sent"], "info")
 
         return redirect(url_for('auth.login'))
 
@@ -111,7 +111,7 @@ def confirm_registration(token):
     user.confirmed = True
     db.session.commit()
 
-    flash(current_app.config["LABELS"]["registration_confirmed"])
+    flash(current_app.config["LABELS"]["registration_confirmed"], "success")
     return redirect(url_for('auth.logout'))
 
 
@@ -142,7 +142,7 @@ def re_confirm_registration():
                        text_body=render_template('email/confirm_registration.txt',  user=user, token=token),
                        html_body=render_template('email/confirm_registration.html', user=user, token=token))
 
-        flash(current_app.config["LABELS"]["registration_email_sent"])
+        flash(current_app.config["LABELS"]["registration_email_sent"], "info")
         return redirect(url_for('auth.logout'))
 
     return render_template('auth/reconfirm_registration.html', 
@@ -175,7 +175,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user is None or not user.check_password(form.password.data):
-            flash(current_app.config["LABELS"]["login_error"])
+            flash(current_app.config["LABELS"]["login_error"], "danger")
             return redirect(url_for('auth.login'))
 
         if not user.confirmed:
@@ -227,7 +227,7 @@ def reset_password_request():
                        text_body=render_template('email/reset_password.txt',  user=user, token=token),
                        html_body=render_template('email/reset_password.html', user=user, token=token))
 
-        flash(current_app.config["LABELS"]["password_reset_email_sent"])
+        flash(current_app.config["LABELS"]["password_reset_email_sent"], "info")
         return redirect(url_for('auth.login'))
 
     return render_template('auth/password_reset_request.html', 
@@ -257,7 +257,7 @@ def reset_password(token):
         user.set_password(form.password.data)
         db.session.commit()
 
-        flash(current_app.config["LABELS"]["password_reset_success"])
+        flash(current_app.config["LABELS"]["password_reset_success"], "success")
         return redirect(url_for('auth.login'))
 
     return render_template('auth/reset_password.html', form=form, btn_map={"submit": "primary"})

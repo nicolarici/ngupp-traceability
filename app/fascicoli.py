@@ -66,7 +66,7 @@ def generation():
         files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
 
         if len(files) > 0:
-            flash(current_app.config["LABELS"]["duplicate_error"])
+            flash(current_app.config["LABELS"]["duplicate_error"], "danger")
             return redirect(url_for('fascicoli.generation'))
         
         file = Files(rg21=form.rg21.data,
@@ -134,7 +134,7 @@ def data(file_id):
             'office_name': hist.nome_ufficio,
             'office_number': hist.ufficio,
             'created': hist.created.strftime(' %H:%M - %d/%m/%Y '),
-            'btn': '<a class="btn btn-sm btn-danger" href="fascicoli/' + str(hist.id) + '/hist_delete" role="button" style="width: 5em;">Elimina</a>'
+            'btn': '<a class="btn btn-sm btn-danger" href="' + str(hist.id) + '/hist_delete" role="button" style="width: 5em;">Elimina</a>'
         }
 
     # response
@@ -195,7 +195,7 @@ def record_delete(hist_id):
         db.session.delete(hist)
         db.session.commit()
     else:
-        flash("Non puoi eliminare l'unico record. Elimina l'intero fascicolo.")
+        flash(current_app.config["LABELS"]["last_hist_delete_error"], "danger")
 
     return redirect(url_for('fascicoli.file_details', file_id=hist.file_id))
 
@@ -232,7 +232,7 @@ def file_duplicate(file_id):
         files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
 
         if len(files) > 0:
-            flash(current_app.config["LABELS"]["duplicate_error"])
+            flash(current_app.config["LABELS"]["duplicate_error"], "danger")
             return redirect(url_for('fascicoli.file_duplicate', file_id=file_id))
 
         dup_file = Files(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data, parent=file_id)
@@ -287,13 +287,13 @@ def file_modify(file_id):
     if form.validate_on_submit():
 
         if file.rg21 == form.rg21.data and file.rg20 == form.rg20.data and file.rg16 == form.rg16.data and file.anno == form.anno.data:
-            flash(current_app.config["LABELS"]["no_change"])
+            flash(current_app.config["LABELS"]["no_change"], "info")
             return redirect(url_for('fascicoli.file_details', file_id=file_id))
 
         files = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).all()
 
         if len(files) > 0:
-            flash(current_app.config["LABELS"]["duplicate_error"])
+            flash(current_app.config["LABELS"]["duplicate_error"], "danger")
             return redirect(url_for('fascicoli.file_modify', file_id=file_id))
 
         file.rg21 = form.rg21.data

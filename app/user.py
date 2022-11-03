@@ -37,7 +37,7 @@ def user(id):
     if form.validate_on_submit():
 
         if user.nome == form.nome.data and user.cognome == form.cognome.data and user.nome_ufficio == form.nome_ufficio.data and user.ufficio == form.ufficio.data:
-            flash(current_app.config["LABELS"]["no_change"])
+            flash(current_app.config["LABELS"]["no_change"], "info")
             return redirect(url_for('index'))
 
         user.nome = form.nome.data

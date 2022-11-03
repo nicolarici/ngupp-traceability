@@ -30,6 +30,7 @@
     "genera":"Genera codice QR",
     "generation_title":"Generazione codice QR",
     "storico_fascicolo":"Storico fascicolo",
+    "last_hist_delete_error": "Non puoi eliminare l'unico record. Elimina l'intero fascicolo.",
     "logout": "Logout",
     "modify": "Aggiorna informazioni",
     "nome": "Nome",
