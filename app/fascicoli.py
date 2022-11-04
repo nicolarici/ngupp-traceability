@@ -185,6 +185,11 @@ def file_delete(file_id):
 
     file = Files.query.filter_by(id=file_id).first()
     db.session.delete(file)
+
+    hist = History.query.filter_by(duplicate_from=file_id).all()
+    for h in hist:
+        db.session.delete(h)
+
     db.session.commit()
 
     os.remove(f"app/static/img/QR_{file_id}.png")
