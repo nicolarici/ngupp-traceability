@@ -25,6 +25,7 @@ def create_app():
     login.init_app(app)
     login.login_view = 'auth.login'
     login.login_message = app.config["LABELS"]["login_required"]
+    login.login_message_category = "danger"
 
 
     from app.extension import db
@@ -105,7 +106,7 @@ def create_app():
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
                 'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
-                'btn': '<a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button" style="width: 5em;">Apri</a>'
+                'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button" style="width: 5em;">' + app.config["LABELS"]["apri"] + '</a></div>'
 
             }
     

@@ -1,6 +1,6 @@
 import os
 import qrcode
-from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory, request
+from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory, request, Markup
 from flask_login import login_required, current_user
 from app.models import Files, History
 from flask_wtf import FlaskForm
@@ -9,6 +9,7 @@ from wtforms.widgets import NumberInput
 from wtforms.validators import DataRequired, Optional, NumberRange
 from app.models import User
 from app.extension import db
+from app.widgets import CustomIntegerField
 from datetime import datetime
 
 
@@ -25,7 +26,7 @@ def generate_qr(file_id):
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")
-        img.save(f"app/static/img/qr_{file_id}.png")
+        img.save(f"app/static/img/QR_{file_id}.png")
 
         return
     
@@ -36,7 +37,7 @@ bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
 @bp.route('/<file_id>/download', methods=['GET', 'POST'])
 def download(file_id):
     uploads = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
-    return send_from_directory(uploads, f"{file_id}.png", as_attachment=True)
+    return send_from_directory(uploads, f"QR_{file_id}.png", as_attachment=True)
 
 
 @bp.route('/generation', methods=('GET', 'POST'))
@@ -44,16 +45,16 @@ def download(file_id):
 def generation():
 
     class GenerationForm(FlaskForm):
-        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+        rg21 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg21"] + "</strong>"), 
                             widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+        rg20 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg20"] + "</strong>"), 
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional(), NumberRange(min=0)])
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+        rg16 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg16"] + "</strong>"), 
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional()])
-        anno = IntegerField(current_app.config["LABELS"]["anno"], 
+        anno = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["anno"] + "</strong>"), 
                             widget=NumberInput(min=1, step=1), 
                             default=datetime.now().year,
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
@@ -89,7 +90,7 @@ def generation():
 @bp.route('/api/data/<file_id>')
 @login_required
 def data(file_id):
-    query = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.user_id, History.created, History.id).order_by(History.created.desc())
+    query = History.query.filter_by(file_id=file_id).join(User, User.id == History.user_id).add_columns(User.nome, User.cognome, User.nome_ufficio, User.ufficio, History.user_id, History.created, History.id, History.duplicate_from).order_by(History.created.desc())
     
     # search filter
     search = request.args.get('search[value]')
@@ -129,12 +130,20 @@ def data(file_id):
 
 
     def render_file(hist):
+
+        if hist.duplicate_from == -1 and hist.user_id is current_user.id:
+            btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-danger" href="' + str(hist.id) + '/hist_delete" type="button"">' + current_app.config["LABELS"]["elimina"] + '</a></div>'
+        elif hist.duplicate_from > -1:
+            btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="/fascicoli/' + str(hist.duplicate_from) + '" type="button">' + current_app.config["LABELS"]["vis_dup"] + '</a></div>'
+        else: 
+            btn = ''
+
         return {
             'user_name': hist.nome + ' ' + hist.cognome,
             'office_name': hist.nome_ufficio,
             'office_number': hist.ufficio,
             'created': hist.created.strftime(' %H:%M - %d/%m/%Y '),
-            'btn': '<a class="btn btn-sm btn-danger" href="' + str(hist.id) + '/hist_delete" role="button" style="width: 5em;">Elimina</a>'
+            'btn': btn
         }
 
     # response
@@ -178,7 +187,7 @@ def file_delete(file_id):
     db.session.delete(file)
     db.session.commit()
 
-    os.remove(f"app/static/img/{file_id}.png")
+    os.remove(f"app/static/img/QR_{file_id}.png")
     
     return redirect(url_for('index'))
 
@@ -207,19 +216,19 @@ def file_duplicate(file_id):
     file = Files.query.filter_by(id=file_id).first()
 
     class DuplicateForm(FlaskForm):
-        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+        rg21 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg21"] + "</strong>"), 
                             default=file.rg21,
                             widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+        rg20 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg20"] + "</strong>"), 
                             default=file.rg20,
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional(), NumberRange(min=0)])
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+        rg16 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg16"] + "</strong>"), 
                             default=file.rg16,
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional()])
-        anno = IntegerField(current_app.config["LABELS"]["anno"], 
+        anno = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["anno"] + "</strong>"), 
                             default=file.anno,
                             widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
@@ -242,12 +251,22 @@ def file_duplicate(file_id):
         file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
         generate_qr(dup_file.id)
 
-        # Add new History
+        # Copy file history
 
         hist = History.query.filter_by(file_id=file_id).all()
         for h in hist:
             new_hist = History(file_id=file.id, created=h.created, user_id=h.user_id)
             db.session.add(new_hist)
+        db.session.commit()
+
+        # Add new history
+
+        new_hist = History(file_id=file_id, created=datetime.now(), user_id=current_user.id, duplicate_from=file.id)
+        db.session.add(new_hist)
+
+        new_hist_dup = History(file_id=file.id, created=datetime.now(), user_id=current_user.id, duplicate_from=file_id)
+        db.session.add(new_hist_dup)
+
         db.session.commit()
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
@@ -264,19 +283,22 @@ def file_modify(file_id):
     file = Files.query.filter_by(id=file_id).first()
 
     class ModifyForm(FlaskForm):
-        rg21 = IntegerField(current_app.config["LABELS"]["rg21"], 
+        rg21 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg21"] + "</strong>"), 
                             default=file.rg21,
                             widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
-        rg20 = IntegerField(current_app.config["LABELS"]["rg20"], 
+                            
+        rg20 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg20"] + "</strong>"), 
                             default=file.rg20,
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional(), NumberRange(min=0)])
-        rg16 = IntegerField(current_app.config["LABELS"]["rg16"], 
+
+        rg16 = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["rg16"] + "</strong>"), 
                             default=file.rg16,
                             widget=NumberInput(min=1, step=1), 
                             validators=[Optional()])
-        anno = IntegerField(current_app.config["LABELS"]["anno"], 
+
+        anno = CustomIntegerField(Markup("<strong>" + current_app.config["LABELS"]["anno"] + "</strong>"), 
                             default=file.anno,
                             widget=NumberInput(min=1, step=1), 
                             validators=[DataRequired(message=current_app.config["LABELS"]["required"])])

@@ -88,6 +88,7 @@ class History(db.Model):  # type: ignore
     created = db.Column(db.DateTime, index=True)
     file_id = db.Column(db.Integer, index=True)
     user_id = db.Column(db.Integer, nullable=False)
+    duplicate_from = db.Column(db.Integer, default=-1)
 
     def __repr__(self):
         return f"<History {self.id}>"

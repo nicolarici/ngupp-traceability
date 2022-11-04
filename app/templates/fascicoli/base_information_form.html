@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
+{% from "_render_field.html" import render_field %}
 
 {% block app_content %}  
     <div class="row">
         <div class="col-md-4 offset-md-4">
             {% if crea %}
-                <h1>Crea fascicolo</h1>
+                <h1>{{ config.LABELS.crea_fascicolo }}</h1>
             {% elif modifica %}
-                <h1>Modifica fascicolo</h1>
+                <h1>{{ config.LABELS.modifica_fascicolo }}</h1>
             {% else %}
-                <h1>Duplica fascicolo </h1>
+                <h1>{{ config.LABELS.duplica_fascicolo }} </h1>
             {% endif %}
 
             <br />
@@ -18,10 +19,10 @@
                 {{ form.hidden_tag() }}
                 {{ wtf.form_errors(form, hiddens="only") }}
               
-                {{ wtf.form_field(form.rg21) }}
-                {{ wtf.form_field(form.rg20) }}
-                {{ wtf.form_field(form.rg16) }}
-                {{ wtf.form_field(form.anno) }}
+                {{ render_field(form.rg21) }}
+                {{ render_field(form.rg20) }}
+                {{ render_field(form.rg16) }}
+                {{ render_field(form.anno) }}
 
                 <div class="d-grid gap-2" style="margin-top: 1em;">
                     {{ wtf.form_field(form.submit, button_map=btn_map) }}

@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import SubmitField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp
 from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 from app.extension import db, mail
 from flask_mail import Message
+from app.widgets import CustomPasswordField, CustomStringField
+from flask import Markup
 
 
 def send_email(subject, sender, recipients, text_body, html_body):
@@ -26,22 +28,22 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
 
     class RegistrationForm(FlaskForm):
-        email = StringField(current_app.config["LABELS"]["email"], 
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                        Email(message=current_app.config["LABELS"]["email_error"]),
-                                        Regexp(".*@giustizia\.it$", message=current_app.config["LABELS"]["mail_error_giustizia"])])
+        email = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["email"] + "</strong>"), 
+                                  validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                              Email(message=current_app.config["LABELS"]["email_error"]),
+                                              Regexp(".*@giustizia\.it$", message=current_app.config["LABELS"]["mail_error_giustizia"])])
                                         
-        password = PasswordField(current_app.config["LABELS"]["password"], 
-                                validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                            EqualTo('confirm', message=current_app.config["LABELS"]["password_match_error"]),
-                                            Regexp("^(?=.*[A-Za-z])(?=.*\d).{8,15}$", message=current_app.config["LABELS"]["password_error"])])
+        password = CustomPasswordField(Markup("<strong>" + current_app.config["LABELS"]["password"] + "</strong>"), 
+                                       validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                                   Regexp("^(?=.*[A-Za-z])(?=.*\d).{8,15}$", message=current_app.config["LABELS"]["password_error"])])
 
-        confirm  = PasswordField(current_app.config["LABELS"]["confirm_password"])
+        confirm  = CustomPasswordField(Markup("<strong>" + current_app.config["LABELS"]["confirm_password"] + "</strong>"),
+                                       validators=[EqualTo('confirm', message=current_app.config["LABELS"]["password_match_error"])])
 
-        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio_opz"])
+        nome_ufficio = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["nome_ufficio_opz"] + "</strong>"))
 
-        ufficio = StringField(current_app.config["LABELS"]["ufficio"], 
-                        validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        ufficio = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["ufficio"] + "</strong>"), 
+                                    validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
         submit = SubmitField(current_app.config["LABELS"]["registration"])
 
@@ -112,16 +114,17 @@ def confirm_registration(token):
     db.session.commit()
 
     flash(current_app.config["LABELS"]["registration_confirmed"], "success")
-    return redirect(url_for('auth.logout'))
+    return redirect(url_for('auth.login'))
 
 
 @bp.route("/re_confirm_registration", methods=['GET', 'POST'])
 def re_confirm_registration():
 
     class ReConfirmRegistrationForm(FlaskForm):
-        email = StringField(current_app.config["LABELS"]["email"], 
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                        Email()])
+        email = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["email"] + "</strong>"), 
+                                  validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                              Regexp(".*@giustizia\.it$", message=current_app.config["LABELS"]["mail_error_giustizia"]),
+                                              Email()])
         submit = SubmitField(current_app.config["LABELS"]["reconfirm_registration"])
 
 
@@ -131,19 +134,26 @@ def re_confirm_registration():
     form = ReConfirmRegistrationForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            token = user.get_registration_token()
-
-            # Invio email.
+        if user is not None:
+            if user.confirmed:
+                flash(current_app.config["LABELS"]["user_alredy_confirmed"], "warning")
             
-            send_email(subject=current_app.config["LABELS"]["confirm_registration"],
-                       sender=current_app.config['MAIL_SENDER'],
-                       recipients=[form.email.data], 
-                       text_body=render_template('email/confirm_registration.txt',  user=user, token=token),
-                       html_body=render_template('email/confirm_registration.html', user=user, token=token))
+            else:     
+                token = user.get_registration_token()
 
-        flash(current_app.config["LABELS"]["registration_email_sent"], "info")
-        return redirect(url_for('auth.logout'))
+                # Invio email.
+                
+                send_email(subject=current_app.config["LABELS"]["confirm_registration"],
+                        sender=current_app.config['MAIL_SENDER'],
+                        recipients=[form.email.data], 
+                        text_body=render_template('email/confirm_registration.txt',  user=user, token=token),
+                        html_body=render_template('email/confirm_registration.html', user=user, token=token))
+
+                flash(current_app.config["LABELS"]["registration_email_sent"], "info")
+                return redirect(url_for('auth.login'))
+                        
+        else:
+            flash(current_app.config["LABELS"]["wrong_email"], "danger")
 
     return render_template('auth/reconfirm_registration.html', 
                            form=form,
@@ -154,12 +164,12 @@ def re_confirm_registration():
 def login():
 
     class LoginForm(FlaskForm):
-        email = StringField(current_app.config["LABELS"]["email"], 
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                        Email(message=current_app.config["LABELS"]["email_error"])])
+        email = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["email"] + "</strong>"), 
+                                  validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                              Email(message=current_app.config["LABELS"]["email_error"])])
                                         
-        password = PasswordField(current_app.config["LABELS"]["password"], 
-                                validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        password = CustomPasswordField(Markup("<strong>" + current_app.config["LABELS"]["password"] + "</strong>"), 
+                                       validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
         remember_me = BooleanField(current_app.config["LABELS"]["remember_me"])
 
@@ -196,7 +206,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('auth.login'))
 
 
 
@@ -204,9 +214,10 @@ def logout():
 def reset_password_request():
 
     class ResetPasswordRequestForm(FlaskForm):
-        email = StringField(current_app.config["LABELS"]["email"], 
-                            validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
-                                        Email()])
+        email = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["email"] + "</strong>"), 
+                                  validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                              Regexp(".*@giustizia\.it$", message=current_app.config["LABELS"]["mail_error_giustizia"]),
+                                              Email()])
         submit = SubmitField(current_app.config["LABELS"]["request_password_reset"])
 
 
@@ -217,18 +228,18 @@ def reset_password_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            token = user.get_reset_password_token()
+                token = user.get_reset_password_token()
 
-            # Invio email.
-            
-            send_email(subject=current_app.config["LABELS"]["password_reset_mail"],
-                       sender=current_app.config['MAIL_SENDER'],
-                       recipients=[form.email.data], 
-                       text_body=render_template('email/reset_password.txt',  user=user, token=token),
-                       html_body=render_template('email/reset_password.html', user=user, token=token))
+                # Invio email.
+                
+                send_email(subject=current_app.config["LABELS"]["password_reset_mail"],
+                        sender=current_app.config['MAIL_SENDER'],
+                        recipients=[form.email.data], 
+                        text_body=render_template('email/reset_password.txt',  user=user, token=token),
+                        html_body=render_template('email/reset_password.html', user=user, token=token))
 
-        flash(current_app.config["LABELS"]["password_reset_email_sent"], "info")
-        return redirect(url_for('auth.login'))
+                flash(current_app.config["LABELS"]["password_reset_email_sent"], "info")
+                return redirect(url_for('auth.login'))
 
     return render_template('auth/password_reset_request.html', 
                            form=form, btn_map={"submit": "primary"})
@@ -238,10 +249,15 @@ def reset_password_request():
 def reset_password(token):
 
     class ResetPasswordForm(FlaskForm):
-        password = PasswordField('Password', validators=[DataRequired()])
-        password2 = PasswordField(
-            'Ripeti Password', validators=[DataRequired(), EqualTo('password')])
-        submit = SubmitField(current_app.config["LABELS"]["password_reset_button"])
+        password = CustomPasswordField(Markup("<strong>" + current_app.config["LABELS"]["password"] + "</strong>"),
+                                       validators=[DataRequired(message=current_app.config["LABELS"]["required"]),
+                                       Regexp("^(?=.*[A-Za-z])(?=.*\d).{8,15}$", message=current_app.config["LABELS"]["password_error"])])
+                                       
+        confirm =  CustomPasswordField(Markup("<strong>" + current_app.config["LABELS"]["ripeti_password"] + "</strong>"),
+                                         validators=[DataRequired(message=current_app.config["LABELS"]["required"]), 
+                                                     EqualTo('password', message=current_app.config["LABELS"]["password_match_error"])])
+        
+        submit = SubmitField(current_app.config["LABELS"]["modify_password"])
 
 
     if current_user.is_authenticated:

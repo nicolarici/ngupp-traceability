@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request
+from flask import Blueprint, render_template, url_for, current_app, redirect, flash, request, Markup
 from flask_login import login_required
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import SubmitField
 from wtforms.validators import DataRequired
 from app.models import User
+from app.widgets import CustomStringField
 from app.extension import db
+
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -16,20 +18,20 @@ def user(id):
 
     class ModifyUserForm(FlaskForm):
                                       
-        nome = StringField(current_app.config["LABELS"]["nome"], 
-                        default=user.nome,
-                        validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        nome = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["nome"] + "</strong>"), 
+                                 default=user.nome,
+                                 validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
-        cognome = StringField(current_app.config["LABELS"]["cognome"], 
-                        default=user.cognome,
-                        validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        cognome = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["cognome"] + "</strong>"), 
+                                    default=user.cognome,
+                                    validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
-        nome_ufficio = StringField(current_app.config["LABELS"]["nome_ufficio_opz"], 
-                        default=user.nome_ufficio)
+        nome_ufficio = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["nome_ufficio_opz"] + "</strong>"), 
+                                         default=user.nome_ufficio)
         
-        ufficio = StringField(current_app.config["LABELS"]["ufficio"], 
-                        default=user.ufficio, 
-                        validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
+        ufficio = CustomStringField(Markup("<strong>" + current_app.config["LABELS"]["ufficio"] + "</strong>"), 
+                                    default=user.ufficio, 
+                                    validators=[DataRequired(message=current_app.config["LABELS"]["required"])])
 
         submit = SubmitField(current_app.config["LABELS"]["modify"])
 
@@ -66,23 +68,21 @@ def promote(user_id):
     
     user = User.query.filter_by(id=user_id).first()
     user.superuser = True
-    
     db.session.commit()
+
     return redirect(url_for('user.see_users'))
-    #return render_template('user/visualizza_utenti.html', title=current_app.config["LABELS"]["lista_utenti"])
 
 
 @bp.route('/demote/<user_id>', methods=('GET', 'POST'))
 @login_required
 def demote(user_id):
+
     user = User.query.filter_by(id=user_id).first()
     user.superuser = False
-    
     db.session.commit()
     
     return redirect(url_for('user.see_users'))
 
-    #return render_template('user/visualizza_utenti.html', title=current_app.config["LABELS"]["lista_utenti"])
 
 @bp.route('/api/data')
 @login_required
@@ -140,15 +140,9 @@ def data():
             'privilegi': bottone
 
         }
-    distinct_users = {}
-    for user in query:
-        if user.id not in distinct_users:
-            distinct_users[user.id] = render_file(user)
 
-    # response
     return {
-        'data': list(distinct_users.values()),
-        #'data': [render_file(file) for file in query],
+        'data': [render_file(file) for file in query],
         'recordsFiltered': total_filtered,
         'recordsTotal': User.query.count(),
         'draw': request.args.get('draw', type=int),

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
+{% from "_render_field.html" import render_field %}
 
 {% block app_content %}
 <div class="row">
@@ -10,10 +11,10 @@
             {{ form.hidden_tag() }}
             {{ wtf.form_errors(form, hiddens="only") }}
           
-            {{ wtf.form_field(form.nome) }}
-            {{ wtf.form_field(form.cognome) }}
-            {{ wtf.form_field(form.nome_ufficio) }}
-            {{ wtf.form_field(form.ufficio) }}
+            {{ render_field(form.nome) }}
+            {{ render_field(form.cognome) }}
+            {{ render_field(form.nome_ufficio) }}
+            {{ render_field(form.ufficio) }}
 
             <div class="d-grid gap-2" style="margin-top: 1em;">
                 {{ wtf.form_field(form.submit, button_map=btn_map) }}

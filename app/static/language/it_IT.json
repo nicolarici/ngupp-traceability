@@ -1,10 +1,14 @@
 {
+    "apri": "Apri",
     "azione": "Azione",
     "azioni": "Azioni",
     "cognome": "Cognome",
     "confirm_password": "Ripeti la password",
     "confirm_registration": "Conferma registrazione",
     "crea": "Crea",
+    "crea_fascicolo": "Crea fascicolo",
+    "modifica_fascicolo": "Modifica fascicolo",
+    "duplica_fascicolo": "Duplica fascicolo",
     "data": "Data",
     "dettaglio_fascicolo": "Dettaglio fascicolo",
     "download_QR": "Scarica QR",
@@ -40,6 +44,7 @@
     "modifica": "Modifica",
     "movimentazioni": "Ultime movimentazioni",
     "password": "Password",
+    "ripeti_password": "Ripeti password",
     "password_match_error": "Le password non corrispondono",
     "password_error": "La password deve essere lunga almeno 8 caratteri e contenere una lettera ed un numero",
     "password_reset": "Password dimenticata?",
@@ -47,6 +52,7 @@
     "password_reset_mail": "Recupera password Tracciabilita fascicoli",
     "password_reset_email_sent": "Controlla la tua email per le istruzioni per il reset della password",
     "request_password_reset": "Richiedi reset password",
+    "modify_password": "Modifica password",
     "password_reset_success": "Password modificata, è possibile nuovamente accedere",
     "reset_password_click": "Clicca qui per resettarla!",
     "profilo": "Profilo",
@@ -56,7 +62,7 @@
     "registration_email_sent": "Controlla la tua email per confermare la registrazione",
     "reconfirm_registration": "Invia nuovamente la e-mail",
     "reconfirm_registration_title": "Conferma account",
-    "reconfirm_registration_subtitle": "Non hai ancora confermato l'account, se non hai ricevuto l'e-mail di conferma, inserisci qua sotto il tuo inidirizzo e-mail e ti invieremo una nuova e-mail di conferma.",
+    "reconfirm_registration_subtitle": "Non ha ancora confermato l'account. Se non ha ricevuto l'e-mail di conferma, inserisca qua sotto il suo indirizzo e-mail per riceverne un'altra.",
     "remember_me": "Ricordami",
     "required": "Campo obbligatorio",
     "rg21": "RG21",
@@ -80,6 +86,8 @@
     "nome_utente": "Nome utente",
     "statistics": "Statistiche",
     "numero_fascicoli": "Numero fascicoli",
-    "tempo_medio": "Tempo medio di gestione"
-    
+    "tempo_medio": "Tempo medio di gestione",
+    "vis_dup": "Visualizza duplicato",
+    "wrong_email": "Email non trovata! Riprova.",
+    "user_alredy_confirmed": "Email inserita appartiene ad un utente già cofnermato."
 }
