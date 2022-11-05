@@ -128,9 +128,9 @@ def data():
     
     def render_file(user):
         if user.superuser:
-            bottone = '<a  href="demote/' + str(user.id) + '" class="btn btn-danger btn-sm" role="button" aria-pressed="true">Revoca Privilegi</a>'
+            bottone = '<div class="d-grid gap-2"><a  href="demote/' + str(user.id) + '" class="btn btn-danger btn-sm" role="button" aria-pressed="true">Revoca Privilegi</a></div>  '
         else:
-            bottone = '<a  href="promote/' + str(user.id) + '" class="btn btn-success btn-sm" role="button" aria-pressed="true">Assegna Privilegi</a>'
+            bottone = '<div class="d-grid gap-2"><a  href="promote/' + str(user.id) + '" class="btn btn-success btn-sm" role="button" aria-pressed="true">Assegna Privilegi</a></div>'
             
         return {
             'nome_utente': user.nome + ' ' + user.cognome,

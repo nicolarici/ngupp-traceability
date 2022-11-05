@@ -83,7 +83,7 @@ def generation():
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"],
+    return render_template('fascicoli/base_information_form.html', 
                             crea=True, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
@@ -158,7 +158,7 @@ def data(file_id):
 @bp.route('/<file_id>', methods=('GET', 'POST'))
 @login_required
 def file_details(file_id):    
-    return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], file=Files.query.get(file_id))
+    return render_template('fascicoli/file_details.html', file=Files.query.get(file_id))
 
 
 @bp.route('/<file_id>/add', methods=('GET', 'POST'))
@@ -277,7 +277,7 @@ def file_duplicate(file_id):
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
         
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+    return render_template('fascicoli/base_information_form.html', 
                             crea=False, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
@@ -334,5 +334,5 @@ def file_modify(file_id):
         return redirect(url_for('fascicoli.file_details', file_id=file.id))
         
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+    return render_template('fascicoli/base_information_form.html', 
                             crea=False, modifica=True, form=form, btn_map={"submit": "primary"})

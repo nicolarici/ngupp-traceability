@@ -30,6 +30,8 @@ def create_app():
 
     from app.extension import db
     db.init_app(app)
+
+    initialize_db(app, db)
     
     from app.extension import migrate
     migrate.init_app(app)
@@ -48,7 +50,7 @@ def create_app():
     @app.route('/index')
     @login_required
     def index():
-        return render_template('index.html', title=app.config["LABELS"]["home_title"])
+        return render_template('index.html')
     
     @app.route('/api/data')
     @login_required
@@ -106,7 +108,7 @@ def create_app():
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
                 'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
-                'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button" style="width: 5em;">' + app.config["LABELS"]["apri"] + '</a></div>'
+                'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button">' + app.config["LABELS"]["apri"] + '</a></div>'
 
             }
     
@@ -140,3 +142,17 @@ def create_app():
     app.register_blueprint(statistics.bp)
     
     return app
+
+
+def initialize_db(app, db):
+    with app.app_context():
+        if not os.path.exists(app.config['DATABASE']):
+            db.create_all()
+            db.session.commit()
+
+        # Rimuove immagini rimaste nella cartella per sbaglio
+
+        uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+
+        for file in os.listdir(uploads):
+            os.remove(os.path.join(uploads, file))
