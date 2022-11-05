@@ -27,9 +27,10 @@ def create_app():
     login.login_message = app.config["LABELS"]["login_required"]
     login.login_message_category = "danger"
 
-
     from app.extension import db
     db.init_app(app)
+
+    initialize_db(app, db)
     
     from app.extension import migrate
     migrate.init_app(app)
@@ -140,3 +141,61 @@ def create_app():
     app.register_blueprint(statistics.bp)
     
     return app
+
+
+from datetime import datetime
+
+def initialize_db(app, db):
+
+    with app.app_context():
+        if not os.path.exists(app.config['DATABASE']):
+
+            # Creazione tabelle
+
+            db.create_all()
+            db.session.commit()
+
+            # Cancelleria
+
+            u1 = User(nome="Emanuela", cognome="Rizzi", nome_ufficio="Cancelleria GIP/GUP", ufficio="1.58", email="emanuela.rizzi@giustizia.it", confirmed=1)
+            u1.set_password("qwertyuiop1")
+
+            # Giudice
+
+            u2 = User(nome="Federica", cognome="Brugnara", nome_ufficio="Ufficio Giudice GIP/GUP", ufficio="1.28", email="federica.brugnara@giustizia.it", confirmed=1)
+            u2.set_password("qwertyuiop1")
+
+            # Magistrato capo
+ 
+            u3 = User(nome="Carlo", cognome="Bianchetti", nome_ufficio="Ufficio Magistrato Cordinatore", ufficio="2.55", email="carlo.bianchetti@giustizia.it", confirmed=1, superuser=1)
+            u3.set_password("qwertyuiop1")
+
+            # Presidente superadmin
+
+            u4 = User(nome="Presidente", cognome="Tribunale", nome_ufficio="Presidenza", ufficio="4.80", email="presidente.tribunale.brescia@giustizia.it", confirmed=1)
+            u4.set_password("qwertyuiop1")
+
+            db.session.add(u1)
+            db.session.add(u2)
+            db.session.add(u3)
+            db.session.add(u4)
+            db.session.commit()
+
+            # Creazione fascicoli
+
+            f1 = Files(rg16="101", rg20="40", rg21="565", anno="2022")
+            
+            db.session.add(f1)
+            db.session.commit()
+
+            # Creazione history
+
+            h11 = History(user_id=u1.id, file_id=f1.id, created=datetime(2022, 11, 4, 10, 30))
+            h12 = History(user_id=u2.id, file_id=f1.id, created=datetime(2022, 11, 4, 11, 18))
+            h13 = History(user_id=u1.id, file_id=f1.id, created=datetime(2022, 11, 4, 17, 10))
+
+            db.session.add(h11)
+            db.session.add(h12)
+            db.session.add(h13)
+
+            db.session.commit()
