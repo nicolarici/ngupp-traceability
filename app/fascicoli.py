@@ -83,7 +83,7 @@ def generation():
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"],
+    return render_template('fascicoli/base_information_form.html', 
                             crea=True, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
@@ -132,7 +132,7 @@ def data(file_id):
     def render_file(hist):
 
         if hist.duplicate_from == -1 and hist.user_id is current_user.id:
-            btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-danger" href="' + str(hist.id) + '/hist_delete" type="button"">' + current_app.config["LABELS"]["elimina"] + '</a></div>'
+            btn = '<div class="d-grid gap-2"><button type="button" data-id="' + str(hist.id) + '" class="btn btn-danger btn-md btn-block" data-bs-toggle="modal" data-bs-target="#deleteHistModal">' + current_app.config["LABELS"]["elimina"] + '</button></div>'
         elif hist.duplicate_from > -1:
             btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="/fascicoli/' + str(hist.duplicate_from) + '" type="button">' + current_app.config["LABELS"]["vis_dup"] + '</a></div>'
         else: 
@@ -158,7 +158,7 @@ def data(file_id):
 @bp.route('/<file_id>', methods=('GET', 'POST'))
 @login_required
 def file_details(file_id):    
-    return render_template('fascicoli/file_details.html', title=current_app.config["LABELS"]["storico_fascicolo"], file=Files.query.get(file_id))
+    return render_template('fascicoli/file_details.html', file=Files.query.get(file_id))
 
 
 @bp.route('/<file_id>/add', methods=('GET', 'POST'))
@@ -277,7 +277,7 @@ def file_duplicate(file_id):
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
         
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+    return render_template('fascicoli/base_information_form.html', 
                             crea=False, modifica=False, form=form, btn_map={"submit": "primary"})
 
 
@@ -334,5 +334,5 @@ def file_modify(file_id):
         return redirect(url_for('fascicoli.file_details', file_id=file.id))
         
 
-    return render_template('fascicoli/base_information_form.html', title=current_app.config["LABELS"]["generation_title"], 
+    return render_template('fascicoli/base_information_form.html', 
                             crea=False, modifica=True, form=form, btn_map={"submit": "primary"})

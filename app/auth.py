@@ -70,11 +70,7 @@ def register():
         except:
             cognome = ""
             
-        if form.email.data == current_app.config["ADMIN_MAIL"]:
-            superuser = True
-        else:
-            superuser = False
-        
+        superuser = form.email.data == current_app.config["ADMIN_MAIL"]        
 
         user = User(nome=nome, cognome=cognome, email=form.email.data, ufficio=form.ufficio.data, nome_ufficio=form.nome_ufficio.data, superuser=superuser)
         user.set_password(form.password.data)
@@ -98,7 +94,6 @@ def register():
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html', 
-                           title=current_app.config["LABELS"]["registration_title"], 
                            form=form, btn_map={"submit": "primary"})
 
 
@@ -198,7 +193,6 @@ def login():
         return redirect(next_page)
 
     return render_template('auth/login.html', 
-                           title=current_app.config["LABELS"]["login_title"], 
                            form=form, btn_map={"submit": "primary"})
 
 

@@ -49,7 +49,7 @@ def create_app():
     @app.route('/index')
     @login_required
     def index():
-        return render_template('index.html', title=app.config["LABELS"]["home_title"])
+        return render_template('index.html')
     
     @app.route('/api/data')
     @login_required
@@ -107,7 +107,7 @@ def create_app():
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
                 'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
-                'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button" style="width: 5em;">' + app.config["LABELS"]["apri"] + '</a></div>'
+                'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button">' + app.config["LABELS"]["apri"] + '</a></div>'
 
             }
     

@@ -51,7 +51,7 @@ bp = Blueprint('statistics', __name__, url_prefix='/statistics')
 @bp.route('/view', methods=('GET', 'POST'))
 @login_required
 def view():
-    return render_template('statistics/statistics.html', title=current_app.config["LABELS"]["statistics"])
+    return render_template('statistics/statistics.html')
 
 
 @bp.route('/api/data')
