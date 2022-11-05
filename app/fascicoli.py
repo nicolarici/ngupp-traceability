@@ -132,7 +132,7 @@ def data(file_id):
     def render_file(hist):
 
         if hist.duplicate_from == -1 and hist.user_id is current_user.id:
-            btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-danger" href="' + str(hist.id) + '/hist_delete" type="button"">' + current_app.config["LABELS"]["elimina"] + '</a></div>'
+            btn = '<div class="d-grid gap-2"><button type="button" data-id="' + str(hist.id) + '" class="btn btn-danger btn-md btn-block" data-bs-toggle="modal" data-bs-target="#deleteHistModal">' + current_app.config["LABELS"]["elimina"] + '</button></div>'
         elif hist.duplicate_from > -1:
             btn = '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="/fascicoli/' + str(hist.duplicate_from) + '" type="button">' + current_app.config["LABELS"]["vis_dup"] + '</a></div>'
         else: 

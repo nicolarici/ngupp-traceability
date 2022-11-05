@@ -57,8 +57,8 @@
         <div class="btn-group flex-wrap" role="group" aria-label="Actions">
           <a class="btn btn-primary btn-md btn-block" href="{{ url_for('fascicoli.download', file_id=file.id) }}">{{ config.LABELS.download_QR }}</a>
           <a class="btn btn-info btn-md btn-block" href="{{ url_for('fascicoli.file_modify', file_id=file.id) }}">{{ config.LABELS.modifica }}</a>
-          <a class="btn btn-success btn-md btn-block" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a>          
-          <a class="btn btn-danger btn-md btn-block" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina }}</a>
+          <a class="btn btn-success btn-md btn-block" href="{{ url_for('fascicoli.file_duplicate', file_id=file.id) }}">{{ config.LABELS.duplica }}</a>  
+          <button type="button" class="btn btn-danger btn-md btn-block" data-bs-toggle="modal" data-bs-target="#deleteFileModal">{{ config.LABELS.elimina }}</button>        
         </div>
       </div>
     </section>
@@ -84,6 +84,45 @@
         </div>
       </div>
     </div>
+
+
+    <!-- Modals -->
+    <div class="modal fade" id="deleteFileModal" tabindex="-1" aria-labelledby="deleteFileModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteFileModalLabel">{{ config.LABELS.elimina_fascicolo }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ config.LABELS.sicuro_elimina_file }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> {{ config.LABELS.chiudi  }}</button>
+            <a class="btn btn-danger btn-md btn-block" href="{{ url_for('fascicoli.file_delete', file_id=file.id) }}">{{ config.LABELS.elimina }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="modal fade" id="deleteHistModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">{{ config.LABELS.elimina_storico }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ config.LABELS.sicuro_elimina_hist }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> {{ config.LABELS.chiudi  }}</button>
+            <a class="btn btn-danger btn-md btn-block" id="btnEliminaHist">{{ config.LABELS.elimina }}</a>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -102,6 +141,13 @@
           {data: 'btn', orderable: false, searchable: false, className: 'dt-body-center'}
         ],
       });
+  });
+
+  $(document).ready(function() {
+    $('#deleteHistModal').on('show.bs.modal', function(e) {
+      var id = $(e.relatedTarget).data('id');
+      $('#btnEliminaHist').attr('href', '/fascicoli/' + id + '/hist_delete');
+    });
   });
   
   </script>
