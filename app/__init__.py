@@ -172,7 +172,7 @@ def initialize_db(app, db):
 
             # Presidente superadmin
 
-            u4 = User(nome="Presidente", cognome="Tribunale", nome_ufficio="Presidenza", ufficio="4.80", email="presidente.tribunale.brescia@giustizia.it", confirmed=1)
+            u4 = User(nome="Presidente", cognome="Tribunale", nome_ufficio="Presidenza", ufficio="4.80", email="presidente.tribunale.brescia@giustizia.it", confirmed=1, superuser=1)
             u4.set_password("qwertyuiop1")
 
             db.session.add(u1)
