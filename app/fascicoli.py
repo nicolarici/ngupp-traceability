@@ -1,5 +1,4 @@
 import os
-import qrcode
 from flask import Blueprint, render_template, url_for, current_app, redirect, flash, send_from_directory, request, Markup
 from flask_login import login_required, current_user
 from app.models import Files, History
@@ -11,24 +10,6 @@ from app.models import User
 from app.extension import db
 from app.widgets import CustomIntegerField
 from datetime import datetime
-
-
-def generate_qr(file_id):
-
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-
-        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{file_id}/add")
-        qr.make(fit=True)
-
-        img = qr.make_image(fill_color="black", back_color="white")
-        img.save(f"app/static/img/QR_{file_id}.png")
-
-        return
     
 
 bp = Blueprint('fascicoli', __name__, url_prefix='/fascicoli')
@@ -79,7 +60,7 @@ def generation():
         db.session.commit()
 
         file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
-        generate_qr(file.id)
+        file.generate_qr()
 
         return redirect(url_for('fascicoli.file_add', file_id=file.id))
 
@@ -253,8 +234,9 @@ def file_duplicate(file_id):
         db.session.add(dup_file)
         db.session.commit()
 
+        dup_file.generate_qr()
+
         file = Files.query.filter_by(rg21=form.rg21.data, rg20=form.rg20.data, rg16=form.rg16.data, anno=form.anno.data).first()
-        generate_qr(dup_file.id)
 
         # Copy file history
 

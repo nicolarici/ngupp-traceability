@@ -4,10 +4,10 @@ from flask import current_app
 from app.extension import db, login
 from time import time
 import jwt
+import qrcode
 
 
-class User(UserMixin, db.Model):  # type: ignore
-
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(32), index=True)
     cognome = db.Column(db.String(32), index=True)
@@ -68,7 +68,7 @@ def load_user(id):
         return None
 
 
-class Files(db.Model):  # type: ignore
+class Files(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rg21 = db.Column(db.Integer, index=True)
     rg20 = db.Column(db.Integer, index=True)
@@ -82,8 +82,26 @@ class Files(db.Model):  # type: ignore
     def __eq__(self, other):
         return self.rg21 == other.rg21 and self.rg20 == other.rg20 and self.rg16 == other.rg16 and self.anno == other.anno
 
+    def generate_qr(self):
 
-class History(db.Model):  # type: ignore
+        if self.id is None:
+            return
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+
+        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{self.id}/add")
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save(f"app/static/img/QR_{self.id}.png")
+
+
+class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, index=True)
     file_id = db.Column(db.Integer, index=True)
