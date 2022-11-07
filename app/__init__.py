@@ -106,7 +106,7 @@ def create_app():
                 'user_name': file.nome + ' ' + file.cognome,
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
-                'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
+                'created': file.created.timestamp(),
                 'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button">' + app.config["LABELS"]["apri"] + '</a></div>'
 
             }
@@ -119,7 +119,6 @@ def create_app():
         # response
         return {
             'data': list(distinct_files.values()),
-            #'data': [render_file(file) for file in query],
             'recordsFiltered': total_filtered,
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),

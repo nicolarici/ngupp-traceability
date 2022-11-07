@@ -1,3 +1,7 @@
+body { 
+    padding-top: 70px; 
+}
+
 .control-label{
     font-weight: bold;
     margin-bottom: 0.5em;    
