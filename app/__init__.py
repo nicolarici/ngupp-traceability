@@ -106,7 +106,7 @@ def create_app():
                 'user_name': file.nome + ' ' + file.cognome,
                 'office_name': file.nome_ufficio,
                 'office_number': file.ufficio,
-                'created': file.created.strftime(' %H:%M - %d/%m/%Y '),
+                'created': file.created.timestamp(),
                 'btn': '<div class="d-grid gap-2"><a class="btn btn-sm btn-success" href="fascicoli/' + str(file.id) + '" role="button">' + app.config["LABELS"]["apri"] + '</a></div>'
 
             }
@@ -119,7 +119,6 @@ def create_app():
         # response
         return {
             'data': list(distinct_files.values()),
-            #'data': [render_file(file) for file in query],
             'recordsFiltered': total_filtered,
             'recordsTotal': Files.query.count(),
             'draw': request.args.get('draw', type=int),
@@ -167,6 +166,15 @@ def initialize_db(app, db):
             u1 = User(nome="Emanuela", cognome="Rizzi", nome_ufficio="Cancelleria GIP/GUP", ufficio="1.58", email="emanuela.rizzi@giustizia.it", confirmed=1)
             u1.set_password("qwertyuiop1")
 
+            u5 = User(nome="Laura", cognome="Talenti", nome_ufficio="Cancelleria GIP/GUP", ufficio="1.58", email="laura.talenti@giustizia.it", confirmed=1)
+            u5.set_password("qwertyuiop1")
+
+            u6 = User(nome="Emilia", cognome="Del Bono", nome_ufficio="Cancelleria GIP/GUP", ufficio="1.58", email="emilia.delbono@giustizia.it", confirmed=1)
+            u6.set_password("qwertyuiop1")
+
+            u7 = User(nome="Roberto", cognome="Martinazzoli", nome_ufficio="Cancelleria GIP/GUP", ufficio="1.58", email="roberto.martinazzoli@giustizia.it", confirmed=1)
+            u7.set_password("qwertyuiop1")
+
             # Giudice
 
             u2 = User(nome="Federica", cognome="Brugnara", nome_ufficio="Ufficio Giudice GIP/GUP", ufficio="1.28", email="federica.brugnara@giustizia.it", confirmed=1)
@@ -186,13 +194,40 @@ def initialize_db(app, db):
             db.session.add(u2)
             db.session.add(u3)
             db.session.add(u4)
+            db.session.add(u5)
+            db.session.add(u6)
+            db.session.add(u7)
+
             db.session.commit()
 
             # Creazione fascicoli
 
-            f1 = Files(rg16="101", rg20="40", rg21="565", anno="2022")
-            
+            f1  = Files(rg16="101", rg20="268", rg21="269", anno="2022")
+            f2  = Files(rg16="102", rg20="864", rg21="",    anno="2022")
+            f3  = Files(rg16="116", rg20="874", rg21="295", anno="2022")
+            f4  = Files(rg16="165", rg20="478", rg21="478", anno="2022")
+            f5  = Files(rg16="197", rg20="125", rg21="565", anno="2022")
+            f6  = Files(rg16="263", rg20="",    rg21="",    anno="2022")
+            f7  = Files(rg16="572", rg20="",    rg21="",    anno="2022")
+            f8  = Files(rg16="467", rg20="",    rg21="",    anno="2022")
+            f9  = Files(rg16="276", rg20="",    rg21="",    anno="2022")
+            f10 = Files(rg16="763", rg20="",    rg21="852", anno="2022")
+            f11 = Files(rg16="472", rg20="",    rg21="246", anno="2022")
+            f12 = Files(rg16="863", rg20="",    rg21="148", anno="2022")
+
             db.session.add(f1)
+            db.session.add(f2)
+            db.session.add(f3)
+            db.session.add(f4)
+            db.session.add(f5)
+            db.session.add(f6)
+            db.session.add(f7)
+            db.session.add(f8)
+            db.session.add(f9)
+            db.session.add(f10)
+            db.session.add(f11)
+            db.session.add(f12)
+
             db.session.commit()
 
             f1.generate_qr()
@@ -203,8 +238,58 @@ def initialize_db(app, db):
             h12 = History(user_id=u2.id, file_id=f1.id, created=datetime(2022, 11, 4, 11, 18))
             h13 = History(user_id=u1.id, file_id=f1.id, created=datetime(2022, 11, 4, 17, 10))
 
+            h21  = History(user_id=u1.id, file_id=f2.id,  created=datetime(2022, 11, 4,  13, 35))
+            h31  = History(user_id=u5.id, file_id=f3.id,  created=datetime(2022, 11, 1,  16, 29))
+            h41  = History(user_id=u6.id, file_id=f4.id,  created=datetime(2022, 10, 29, 9,  40))
+            h51  = History(user_id=u7.id, file_id=f5.id,  created=datetime(2022, 11, 2,  15, 1))
+            h61  = History(user_id=u1.id, file_id=f6.id,  created=datetime(2022, 11, 2,  13, 14))
+            h71  = History(user_id=u5.id, file_id=f7.id,  created=datetime(2022, 10, 26, 14, 53))
+            h81  = History(user_id=u6.id, file_id=f8.id,  created=datetime(2022, 10, 27, 8,  34))
+            h91  = History(user_id=u7.id, file_id=f9.id,  created=datetime(2022, 11, 3,  15, 54))
+            h101 = History(user_id=u1.id, file_id=f10.id, created=datetime(2022, 11, 7,  13, 18))
+            h111 = History(user_id=u7.id, file_id=f11.id, created=datetime(2022, 11, 4,  7,  45))
+            h121 = History(user_id=u5.id, file_id=f12.id, created=datetime(2022, 10, 28, 10, 15))
+
+            h22  = History(user_id=u5.id, file_id=f2.id,  created=datetime(2022, 11, 4,  15, 55))
+            h32  = History(user_id=u6.id, file_id=f3.id,  created=datetime(2022, 11, 2,  10, 57))
+            h42  = History(user_id=u7.id, file_id=f4.id,  created=datetime(2022, 11, 2,  7,  55))
+            h52  = History(user_id=u1.id, file_id=f5.id,  created=datetime(2022, 11, 3,  10, 16))
+            h62  = History(user_id=u5.id, file_id=f6.id,  created=datetime(2022, 11, 2,  18, 14))
+            h72  = History(user_id=u6.id, file_id=f7.id,  created=datetime(2022, 10, 29, 10, 24))
+            h82  = History(user_id=u7.id, file_id=f8.id,  created=datetime(2022, 10, 27, 14, 56))
+            h92  = History(user_id=u1.id, file_id=f9.id,  created=datetime(2022, 11, 4,  15, 34))
+            h102 = History(user_id=u5.id, file_id=f10.id, created=datetime(2022, 11, 7,  14, 29))
+            h112 = History(user_id=u6.id, file_id=f11.id, created=datetime(2022, 11, 4,  17, 15))
+            h122 = History(user_id=u7.id, file_id=f12.id, created=datetime(2022, 10, 28, 16, 14))
+
+
+
             db.session.add(h11)
             db.session.add(h12)
             db.session.add(h13)
+
+            db.session.add(h21)
+            db.session.add(h31)
+            db.session.add(h41)
+            db.session.add(h51)
+            db.session.add(h61)
+            db.session.add(h71)
+            db.session.add(h81)
+            db.session.add(h91)
+            db.session.add(h101)
+            db.session.add(h111)
+            db.session.add(h121)
+
+            db.session.add(h22)
+            db.session.add(h32)
+            db.session.add(h42)
+            db.session.add(h52)
+            db.session.add(h62)
+            db.session.add(h72)
+            db.session.add(h82)
+            db.session.add(h92)
+            db.session.add(h102)
+            db.session.add(h112)
+            db.session.add(h122)
 
             db.session.commit()
