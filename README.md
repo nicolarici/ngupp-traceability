@@ -33,7 +33,7 @@ ssh -i "aws_key.pem" ubuntu@ec2-34-244-14-112.eu-west-1.compute.amazonaws.com
 sudo su
 conda activate ngupp
 cd ngupp-traceability/
-nohup python email_server.py > /home/user/email_server.log &
+nohup python email_server.py > /home/ubuntu/email_server.log &
 flask run --host=0.0.0.0 --port=80
 ```
 
