@@ -1,20 +1,27 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-    <h1>{{ title }}</h1>
-    <table id="data" class="table table-striped">
-        <thead>
+  <h1>{{ config.LABELS.statistics }}</h1>
+  <hr>
+  <div class="container">
+    <div class="row">
+      <div class="table-responsive col-md-12">
+        <table id="data" class="table table-striped table-hover dt-responsive">
+          <thead>
             <tr>
-            <th>{{config.LABELS.nome_utente}}</th>
-            <th>{{config.LABELS.ufficio}}</th>
-            <th>{{config.LABELS.nome_ufficio}}</th>
-            <th>{{config.LABELS.numero_fascicoli}}</th>
-            <th>{{config.LABELS.tempo_medio}}</th>
+              <th>{{config.LABELS.nome_utente}}</th>
+              <th>{{config.LABELS.ufficio}}</th>
+              <th>{{config.LABELS.nome_ufficio}}</th>
+              <th>{{config.LABELS.numero_fascicoli}}</th>
+              <th>{{config.LABELS.tempo_medio}}</th>
             </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 {% block scripts %}
   <script>

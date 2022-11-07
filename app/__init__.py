@@ -150,6 +150,13 @@ def initialize_db(app, db):
     with app.app_context():
         if not os.path.exists(app.config['DATABASE']):
 
+            # Rimuove immagini rimaste nella cartella per sbaglio
+
+            uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+
+            for file in os.listdir(uploads):
+                os.remove(os.path.join(uploads, file))
+
             # Creazione tabelle
 
             db.create_all()
@@ -187,6 +194,8 @@ def initialize_db(app, db):
             
             db.session.add(f1)
             db.session.commit()
+
+            f1.generate_qr()
 
             # Creazione history
 
