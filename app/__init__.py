@@ -213,7 +213,7 @@ def initialize_db(app, db):
             f9  = Files(rg16="276", rg20="",    rg21="",    anno="2022")
             f10 = Files(rg16="763", rg20="",    rg21="852", anno="2022")
             f11 = Files(rg16="472", rg20="",    rg21="246", anno="2022")
-            f12 = Files(rg16="863", rg20="",    rg21="148", anno="2022")
+            f12= Files(rg16="863", rg20="",    rg21="148", anno="2022")
 
             db.session.add(f1)
             db.session.add(f2)
@@ -231,6 +231,18 @@ def initialize_db(app, db):
             db.session.commit()
 
             f1.generate_qr()
+            f2.generate_qr()
+            f3.generate_qr()
+            f4.generate_qr()
+            f5.generate_qr()
+            f6.generate_qr()
+            f7.generate_qr()
+            f8.generate_qr()
+            f9.generate_qr()
+            f10.generate_qr()
+            f11.generate_qr()
+            f12.generate_qr()
+
 
             # Creazione history
 
