@@ -94,7 +94,7 @@ class Files(db.Model):
             border=4,
         )
 
-        qr.add_data(current_app.config["BASE_URL"] + f"fascicoli/{self.id}/add")
+        qr.add_data(current_app.config["BASE_URL"] + f"/fascicoli/{self.id}/add")
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")

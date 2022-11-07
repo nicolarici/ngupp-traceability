@@ -7,7 +7,7 @@ class Config(object):
     SECRET_KEY = 'devkey'
     DATABASE = os.path.join(basedir, 'app.db')
     LANGUAGE = 'it_IT'
-    BASE_URL = "http://127.0.0.1:5000/"
+    BASE_URL = "ec2-34-244-14-112.eu-west-1.compute.amazonaws.com"
 
     BOOTSTRAP_USE_MINIFIED = True
     BOOTSTRAP_CDN_FORCE_SSL = True

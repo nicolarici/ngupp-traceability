@@ -50,9 +50,9 @@
 
         {% if current_user.is_anonymous %}
             {% if request.endpoint == "auth.login" %}
-                <a class="nav-item nav-link ms-auto" href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
+                <a class="nav-item nav-link ms-auto text-light" href="{{ url_for('auth.register') }}">{{ config.LABELS.registration }}</a>
             {% else %}
-                <a class="nav-item nav-link ms-auto" href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a>
+                <a class="nav-item nav-link ms-auto text-light" href="{{ url_for('auth.login') }}">{{ config.LABELS.login }}</a>
             {% endif %}
         {% else %}
         <div class="nav-item dropdown ms-auto">
