@@ -11,37 +11,30 @@ conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchem
 
 ## Useful commands:
 
-Connect to the server in tunneling to be able to open the site from the local browser
+### Developmente
+
+Connect to the server in tunneling to be able to open the site from the local browser and start the web site and the fake email server
 ```console
 ssh -L localhost:5000:localhost:5000 user@10.20.255.201
-```
 
-
-
-Start the Flask server:
-```console
 conda activate ngupp
-flask run
+cd ngupp-traceability/
+nohup python email_server.py > /home/user/email_server.log &
+flask --debug run
+
+
 ```
 
-
-## Database
-Initialization
+### Production
+Connect to the server and start the web site and the fake email server:
 ```console
-flask db init
-```
+ssh -i "aws_key.pem" ubuntu@ec2-34-244-14-112.eu-west-1.compute.amazonaws.com
 
-After all schema modification (modification to models.py)
-```console
-flask db migrate -m "message"
-flask db upgrade
-```
-
-# Mail-server
-Fake email server start
-```console
+sudo su
 conda activate ngupp
-python email_server.py
+cd ngupp-traceability/
+nohup python email_server.py > /home/user/email_server.log &
+flask run --host=0.0.0.0 --port=80
 ```
 
 
