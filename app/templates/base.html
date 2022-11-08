@@ -59,7 +59,7 @@
             <a class="nav-link dropdown-toggle text-light" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{ current_user.nome }} {{ current_user.cognome }}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <ul class="dropdown-menu dropdown-menu-end" role="group" aria-labelledby="navbarDropdown">
                 <li class="nav-item">
                     <a class="dropdown-item" href="{{ url_for('user.user', id=current_user.id) }}">{{ config.LABELS.profilo }}</a>
                 </li>
@@ -96,6 +96,10 @@
     </main>
 {% endblock %}
 
-
-
-
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $(".dropdown-toggle").dropdown();
+    });
+</script>
+{% endblock %}
