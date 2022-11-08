@@ -133,11 +133,29 @@
             url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/it-IT.json'
         },
         ajax: '{{ url_for("fascicoli.data", file_id=file.id) }}',
+        order: [[3, 'desc']],
         columns: [
           {data: 'user_name', orderable: false},
           {data: 'office_name', orderable: false},
           {data: 'office_number', orderable: false},
-          {data: 'created'},
+          {data: 'created', render: function (data, type, row) {
+              if(type == "display"){
+                var d = new Date(1970, 0, 1);
+                d.setSeconds(data);
+
+                var h = (d.getHours() < 10 ? '0' : '') + d.getHours()
+                var m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes()
+                var D = (d.getDate() < 10 ? '0' : '') + d.getDate()
+                var M = (d.getMonth()+1 < 10 ? '0' : '') + (d.getMonth()+1)
+
+                var datestring = h + ":" + m + " - " + D + "/" + M + "/" + d.getFullYear();
+
+                return datestring;
+              }
+              else{
+                return data;
+              }
+            }},
           {data: 'btn', orderable: false, searchable: false, className: 'dt-body-center'}
         ],
       });

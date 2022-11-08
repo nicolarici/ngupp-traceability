@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, url_for, current_app, redirect, fl
 from flask_login import login_required, current_user
 from app.models import Files, History
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, IntegerField
+from wtforms import SubmitField
 from wtforms.widgets import NumberInput
 from wtforms.validators import DataRequired, Optional, NumberRange
 from app.models import User
@@ -123,7 +123,7 @@ def data(file_id):
             'user_name': hist.nome + ' ' + hist.cognome,
             'office_name': hist.nome_ufficio,
             'office_number': hist.ufficio,
-            'created': hist.created.strftime(' %H:%M - %d/%m/%Y '),
+            'created': hist.created.timestamp(),
             'btn': btn
         }
 
