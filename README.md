@@ -15,7 +15,7 @@ conda create -n ngupp python=3.8 flask flask-wtf email_validator flask-sqlalchem
 
 Connect to the server in tunneling to be able to open the site from the local browser and start the web site and the fake email server
 ```console
-ssh -L localhost:5000:localhost:5000 user@10.20.255.201
+ssh -L localhost:5000:localhost:5000 [user]@[host]
 
 conda activate ngupp
 cd ngupp-traceability/
@@ -28,7 +28,7 @@ flask --debug run
 ### Production
 Connect to the server and start the web site and the fake email server:
 ```console
-ssh -i "aws_key.pem" ubuntu@ec2-34-244-14-112.eu-west-1.compute.amazonaws.com
+ssh [user]@[host]
 
 sudo su
 conda activate ngupp
